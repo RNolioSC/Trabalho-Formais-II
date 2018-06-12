@@ -1,1 +1,1 @@
-ASD
+S-> aS | aXb | c

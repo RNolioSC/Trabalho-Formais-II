@@ -148,7 +148,7 @@ class View:
 
     # Executar a operacao selecionada e exibe os resultados
     def exibir_resultados(self):
-        pass
+        self.controller.set_glc(self.input)
 
     def clear_text(self):
         try:
