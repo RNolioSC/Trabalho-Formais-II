@@ -48,9 +48,11 @@ class Glc:
 
         return new_dict_glc
 
-
     def get_dict_glc(self):
         return self.dict_glc
 
-    def get_estado_inicial(self):
+    def get_simbolo_inicial(self):
         return self.simbolo_inicial
+
+    def set_simbolo_inicial(self, novo_simbolo):
+        self.simbolo_inicial = novo_simbolo

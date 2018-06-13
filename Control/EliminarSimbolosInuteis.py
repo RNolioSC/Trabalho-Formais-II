@@ -1,7 +1,16 @@
+from Model.glc import *
 from string import punctuation
 import copy
 
+
 class EliminarSimbolosInuteis:
+
+    @staticmethod
+    def eliminar_simbolos_inuteis(glc):
+        glc_ferteis, _ = EliminarSimbolosInuteis.eliminar_inferteis(glc)
+        glc_alcancaveis, _ = EliminarSimbolosInuteis.eliminar_inalcancaveis(glc_ferteis)
+
+        return glc_alcancaveis
 
     @staticmethod
     def eliminar_inferteis(glc):
@@ -28,15 +37,16 @@ class EliminarSimbolosInuteis:
         pos_para_eliminar = []
         for simbolo in dead_symbols:
             for vn in dict_gr.keys():
-                for pos_producoes in range(len(dict_gr[vn])):
-                    if simbolo in dict_gr[vn][pos_producoes]:
-                        pos_para_eliminar.append(pos_producoes)
-                for pos in pos_para_eliminar:
-                    del new_dict_glc[vn][pos]
-                pos_para_eliminar = []
+                if vn not in dead_symbols:
+                    for pos_producoes in range(len(dict_gr[vn])):
+                        if simbolo in dict_gr[vn][pos_producoes]:
+                            pos_para_eliminar.append(pos_producoes)
+                    for pos in pos_para_eliminar:
+                        del new_dict_glc[vn][pos]
+                    pos_para_eliminar = []
             del new_dict_glc[simbolo]
 
-        return new_dict_glc, N
+        return Glc(new_dict_glc, glc.get_simbolo_inicial()), N
 
     @staticmethod
     def eliminar_inalcancaveis(glc):
@@ -45,7 +55,7 @@ class EliminarSimbolosInuteis:
 
         # Conjunto N
         N = None
-        tmp_N = [glc.get_estado_inicial()]
+        tmp_N = [glc.get_simbolo_inicial()]
 
         while N != tmp_N:
             N = tmp_N
@@ -60,4 +70,4 @@ class EliminarSimbolosInuteis:
             if not simbolo.islower() and simbolo not in punctuation:
                 new_dict_glc[simbolo] = dict_glc[simbolo]
 
-        return new_dict_glc, N
+        return Glc(new_dict_glc, glc.get_simbolo_inicial()), N
