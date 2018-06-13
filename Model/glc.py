@@ -1,8 +1,8 @@
 class Glc:
 
-    def __init__(self, text):
-        self.simbolo_inicial = ""
-        self.dict_glc = self.text_to_dict(text)
+    def __init__(self, *args):
+        self.dict_glc = self.text_to_dict(args[0]) if not isinstance(args[0], dict) else args[0]
+        self.simbolo_inicial = args[1]
         print(self.dict_glc)
 
     def text_to_dict(self, text_glc):
@@ -49,7 +49,7 @@ class Glc:
         return new_dict_glc
 
 
-    def get_dict_gr(self):
+    def get_dict_glc(self):
         return self.dict_glc
 
     def get_estado_inicial(self):
