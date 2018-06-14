@@ -28,6 +28,3 @@ class LGoperations:
                     elif simbolo.isupper():
                         novos_vn.append(simbolo)
         return True
-
-#x = Glc({'S': [['&'], ['A', 'ab']], 'A': [['a', 'A']], 'X':[['b','A']]}, 'S')
-#print(LGoperations.eh_finita(x))
