@@ -6,7 +6,7 @@ class GLCPropria:
 
     @staticmethod
     def glc_propria(glc):
-        glc_e_livre = GLCPropria.e_livre(glc)
+        glc_e_livre = GLCPropria.e_livre(glc) if GLCPropria.construir_NE(glc) else glc
         new_glc = GLCPropria.remove_ciclos(glc_e_livre) if GLCPropria.verifica_ciclos(glc_e_livre) else glc_e_livre
         glc_propria = EliminarSimbolosInuteis.eliminar_simbolos_inuteis(new_glc)
 
@@ -35,16 +35,54 @@ class GLCPropria:
 
         new_glc = Glc(new_dict_glc, glc.get_simbolo_inicial())
 
-        # Verifica se estado inicial em NE
         if glc.get_simbolo_inicial() in ne:
-            dict_glc['S99'] = [[glc.get_simbolo_inicial()], ['&']]
+            new_glc.get_dict_glc()['S99'] = [[glc.get_simbolo_inicial()], ['&']]
             new_glc.set_simbolo_inicial('S99')
 
         return new_glc, ne
 
     @staticmethod
     def remove_ciclos(glc):
-        pass
+        if not GLCPropria.verifica_ciclos(glc):
+            return glc
+
+        dict_glc = glc.get_dict_glc()
+        new_dict_glc = {}
+
+        # Dicionário N{S,A.....,X} = lista de producoes simples
+        tmp_N = {}
+
+        # Add prod simples diretas relacionadas ao simbolo
+        for simbolo in dict_glc.keys():
+            tmp_N[simbolo] = []
+            new_dict_glc[simbolo] = []
+            for producoes in dict_glc[simbolo]:
+                if len(producoes) == 1 and not(producoes[0].islower() or producoes[0] in punctuation):
+                    tmp_N[simbolo].append(producoes[0])
+                else:
+                    new_dict_glc[simbolo].append(producoes)
+
+        # Add prod simples indiretas relacionadas ao simbolo
+        N = {}
+        while len(N.values()) != len(tmp_N.values()):
+            N = tmp_N
+
+            for simbolo in N.keys():
+                for prod_simples in N[simbolo]:
+                    for prod in N[prod_simples]:
+                        if prod not in N[simbolo]:
+                            tmp_N[simbolo].append(prod)
+
+        tmp_dict_glc = copy.deepcopy(new_dict_glc)
+
+        for simbolos in N:
+            for prod_simples in N[simbolos]:
+                if simbolos != prod_simples:
+                    new_dict_glc[simbolos] += tmp_dict_glc[prod_simples]
+
+        new_glc = Glc(new_dict_glc, glc.get_simbolo_inicial())
+
+        return new_glc, N
 
     '''
         Métodos auxiliares
@@ -104,6 +142,9 @@ class GLCPropria:
                             if (elemento.islower() or elemento in punctuation) and elemento not in ne:
                                 permite_e = False
                                 break
+                            elif len(producoes) == 1 and elemento not in ne:
+                                permite_e = False
+                                break
                         if permite_e:
                             tmp_ne.append(simbolo)
                     permite_e = True
@@ -112,10 +153,27 @@ class GLCPropria:
 
     @staticmethod
     def verifica_ciclos(glc):
-        pass
+        dict_glc = glc.get_dict_glc()
+        ja_visitados = []
+
+        for simbolos in dict_glc.keys():
+            if simbolos not in ja_visitados:
+                ja_visitados.append(simbolos)
+            for producoes in dict_glc[simbolos]:
+                if len(producoes) == 1 and not(producoes[0].islower() or producoes[0] in punctuation):
+                    if producoes[0] in ja_visitados:
+                        return True
+                    ja_visitados.append(producoes[0])
+        return False
 
 
-x = Glc({'S': [['&'], ['A', 'ab']], 'A': [['a', 'S', 'X']], 'X': [['S']]}, 'S')
-#print(GLCPropria.construir_NE(x))
-GLCPropria.e_livre(x)
-#print(GLCPropria.gera_producoes_validas(['a', 'S', 'X'], ['S', 'X']))
+#x_ciclo = Glc({'S': [['A', 'ab'], ['A']], 'A': [['a', 'S', 'X'], ['X']], 'X': [['S']]}, 'S')
+#print(GLCPropria.construir_NE(x_ciclo))
+
+#print(x_ciclo.get_dict_glc())
+#x = GLCPropria.e_livre(x_ciclo)[0]
+#print(x.get_dict_glc())
+#x = GLCPropria.remove_ciclos(x)[0]
+#print(x.get_dict_glc())
+#x = EliminarSimbolosInuteis.eliminar_simbolos_inuteis(x)[0]
+#print(x.get_dict_glc())

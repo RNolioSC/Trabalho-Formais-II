@@ -3,7 +3,6 @@ class Glc:
     def __init__(self, *args):
         self.dict_glc = self.text_to_dict(args[0]) if not isinstance(args[0], dict) else args[0]
         self.simbolo_inicial = args[1]
-        print(self.dict_glc)
 
     def text_to_dict(self, text_glc):
         new_dict_glc = {}

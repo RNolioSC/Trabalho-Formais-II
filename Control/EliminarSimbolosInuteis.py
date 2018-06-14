@@ -7,10 +7,10 @@ class EliminarSimbolosInuteis:
 
     @staticmethod
     def eliminar_simbolos_inuteis(glc):
-        glc_ferteis, _ = EliminarSimbolosInuteis.eliminar_inferteis(glc)
-        glc_alcancaveis, _ = EliminarSimbolosInuteis.eliminar_inalcancaveis(glc_ferteis)
+        glc_ferteis, Nf = EliminarSimbolosInuteis.eliminar_inferteis(glc)
+        glc_alcancaveis, Na = EliminarSimbolosInuteis.eliminar_inalcancaveis(glc_ferteis)
 
-        return glc_alcancaveis
+        return glc_alcancaveis, Na
 
     @staticmethod
     def eliminar_inferteis(glc):
