@@ -1,6 +1,7 @@
 from tkinter import messagebox
 from tkinter import *
 from Control.Controller import *
+from Model.glc import *
 
 class View:
 
@@ -63,8 +64,8 @@ class View:
         self.lista_operacoes = Listbox(self.frame_dir, width=40, height=7)
         self.lista_operacoes.grid(row=16, column=0, columnspan=12, rowspan=16, sticky='wse', pady=3)
 
-        self.output_gr = Text(self.frame_dir, bg='white', width=30, height=15)
-        self.output_gr.grid(row=0, column=2, columnspan=3, sticky="ew")
+        self.output_glc = Text(self.frame_dir, bg='white', width=30, height=15)
+        self.output_glc.grid(row=0, column=2, columnspan=3, sticky="ew")
 
         # Criar widgets frame do topo
         self.frame_top.grid_rowconfigure(1, weight=1)
@@ -149,9 +150,49 @@ class View:
     # Executar a operacao selecionada e exibe os resultados
     def exibir_resultados(self):
         self.controller.set_glc(self.input)
+        if self.operacao == 5:
+            self.controller.set_n_passos(5) # TODO criar uma var pra receber esse cara (Um messagebox, mais fácil)
+
+        self.resultados = self.controller.exec_operations(self.operacao)
+        if self.operacao not in [1, 2, 4]:
+            self.formata_glc(self.resultados)
+        else:
+            if self.operacao == 1:
+                msg = "A gramática gera L(G) vazia" if self.resultados else "A gramática gera L(G) não vazia"
+            if self.operacao == 2:
+                msg = "A gramática gera L(G) finita" if self.resultados else "A gramática gera L(G) infinita"
+            if self.operacao == 4:
+                msg = "A gramática está fatorada" if self.resultados else "A gramática não está fatorada"
+            messagebox.showinfo("Resultado da operação", msg)
 
     def clear_text(self):
         try:
-            self.output_gr.destroy()
+            self.output_glc.destroy()
         except AttributeError:
             pass
+
+    def formata_glc(self, glc):
+        dict_glc = glc.get_dict_glc()
+
+        output = ''
+
+        # Seta simbolo inicial como primeiro simbolo
+        output += glc.get_simbolo_inicial() + '-> '
+        for producoes in dict_glc[glc.get_simbolo_inicial()]:
+            for simbolo in producoes:
+                output += simbolo + ' '
+            output += '| '
+        output = output[:-2]
+        self.output_glc.insert(END, output)
+
+        # Seta os demais simbolos
+        for simbolos in dict_glc.keys():
+            if simbolos != glc.get_simbolo_inicial():
+                output = ''
+                output += simbolos + '-> '
+                for producoes in dict_glc[simbolos]:
+                    for simbolo in producoes:
+                        output += simbolo + ' '
+                    output += '| '
+                output = '\n' + output[:-2]
+                self.output_glc.insert(END, output)

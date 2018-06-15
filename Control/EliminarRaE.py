@@ -1,4 +1,6 @@
 from Model.glc import *
+import copy
+
 
 class EliminarRaE:
 
@@ -8,17 +10,44 @@ class EliminarRaE:
         # Verifica se tem recursão a esquerda direta/indireta
         # rec_direta será a ordem
         rec_direta, rec_indireta = EliminarRaE.verificar_recursao(glc)
-        if not(rec_direta and rec_indireta.values()):
-            return False
+        if not(rec_direta or len(rec_indireta.values()) != 0):
+            return glc
 
         dict_glc = glc.get_dict_glc()
+        new_dict_glc = copy.deepcopy(dict_glc)
+        tmp_dict_glc = copy.deepcopy(new_dict_glc)
 
-        for avanca in range(len(rec_direta)):
-            print(avanca)
-            for retrocede in range(avanca, 0, -1):
-                print(retrocede)
-                print("--")
+        ordem = [simbolo for simbolo in dict_glc.keys() if simbolo in rec_direta or simbolo in list(rec_indireta.keys())]
+        for avanca in range(len(ordem)):
+            for retrocede in range(avanca-1, -1, -1):
+                # Substituição
+                if ordem[retrocede] != ordem[avanca]:
+                    for producoes in tmp_dict_glc[ordem[avanca]]:
+                        if producoes[0] == ordem[retrocede]:
+                            tmp_producao = producoes[1:]
+                            conj_producoes = []
+                            for producao_Aj in tmp_dict_glc[ordem[retrocede]]:
+                                conj_producoes.append(producao_Aj + tmp_producao)
+                            new_dict_glc[ordem[avanca]] += conj_producoes
+                            new_dict_glc[ordem[avanca]].remove(producoes)
 
+            novo_vn = ordem[avanca] + '98'
+            new_dict_glc[novo_vn] = []
+            tmp_dict_glc = copy.deepcopy(new_dict_glc)
+
+            # Eliminação direta
+            for producoes in tmp_dict_glc[ordem[avanca]]:
+                if producoes[0] == ordem[avanca]:
+                    new_dict_glc[novo_vn].append(producoes[1:] + [novo_vn])
+                else:
+                    new_dict_glc[ordem[avanca]].append(producoes + [novo_vn])
+                new_dict_glc[ordem[avanca]].remove(producoes)
+            new_dict_glc[novo_vn] += [['&']]
+
+            tmp_dict_glc = copy.deepcopy(new_dict_glc)
+
+        new_glc = Glc(new_dict_glc, glc.get_simbolo_inicial())
+        return new_glc
 
     @staticmethod
     def verificar_recursao(glc):
@@ -32,12 +61,15 @@ class EliminarRaE:
                 if producoes[0] == simbolos:
                     rec_direta.append(simbolos)
                 elif producoes[0] in list(dict_glc.keys()):
-                    rec_indireta[simbolos].append(producoes[0])
+                    for prod_indiretas in dict_glc[producoes[0]]:
+                        if prod_indiretas[0] == simbolos and producoes[0] not in rec_indireta[simbolos]:
+                            rec_indireta[simbolos].append(producoes[0])
+            if not rec_indireta[simbolos]:
+                del rec_indireta[simbolos]
 
         return rec_direta, rec_indireta
 
-
-
-y = Glc({'S': [['a']], 'A': [['d']]}, 'S')
-x = Glc({'S': [['A', 'a'], ['S', 'b']], 'A': [['S', 'c'], ['d']]}, 'S')
-print(EliminarRaE.eliminar_RaE(x))
+#y = Glc({'S': [['a']], 'A': [['d']]}, 'S')
+#x = Glc({'S': [['A', 'a'], ['S', 'b']], 'A': [['S', 'c'], ['d']]}, 'S')
+#z = Glc({'S': [['S', 'a'], ['b']], 'A': [['S', 'c'], ['d']]}, 'S')
+#print(EliminarRaE.eliminar_RaE(x).get_dict_glc())
