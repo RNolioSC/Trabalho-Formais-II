@@ -32,7 +32,7 @@ class EliminarRaE:
                             new_dict_glc[ordem[avanca]].remove(producoes)
 
             if ordem[avanca] in rec_direta or ordem[avanca] in rec_indireta_consulta:
-                novo_vn = ordem[avanca] + '98'
+                novo_vn = ordem[avanca] + '1'
                 new_dict_glc[novo_vn] = []
                 tmp_dict_glc = copy.deepcopy(new_dict_glc)
 

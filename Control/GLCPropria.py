@@ -7,10 +7,10 @@ class GLCPropria:
     @staticmethod
     def glc_propria(glc):
         glc_e_livre, ne = GLCPropria.e_livre(glc) if GLCPropria.construir_NE(glc) else (glc, [])
-        new_glc, n = GLCPropria.remove_ciclos(glc_e_livre) if GLCPropria.verifica_ciclos(glc_e_livre) else (glc_e_livre, [])
-        glc_propria, nf, vi = EliminarSimbolosInuteis.eliminar_simbolos_inuteis(new_glc)
+        glc_sem_ciclos, n = GLCPropria.remove_ciclos(glc_e_livre) if GLCPropria.verifica_ciclos(glc_e_livre) else (glc_e_livre, [])
+        glc_propria, nf, vi = EliminarSimbolosInuteis.eliminar_simbolos_inuteis(glc_sem_ciclos)
 
-        return glc_propria, ne, n, nf, vi
+        return glc_propria, glc_e_livre, glc_sem_ciclos, ne, n, nf, vi
 
     @staticmethod
     def e_livre(glc):
@@ -41,8 +41,9 @@ class GLCPropria:
         new_glc = Glc(new_dict_glc, glc.get_simbolo_inicial())
 
         if glc.get_simbolo_inicial() in ne:
-            new_glc.get_dict_glc()['S99'] = [[glc.get_simbolo_inicial()], ['&']]
-            new_glc.set_simbolo_inicial('S99')
+            novo_simbolo = glc.get_simbolo_inicial() + '1'
+            new_glc.get_dict_glc()[novo_simbolo] = [[glc.get_simbolo_inicial()], ['&']]
+            new_glc.set_simbolo_inicial(novo_simbolo)
 
         return new_glc, ne
 

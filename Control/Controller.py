@@ -8,6 +8,8 @@ from Control.GLCPropria import *
 
 class Controller:
 
+    # TODO Executar o algoritmo da gramática própria antes de executar a RaE
+
     def __init__(self):
         self.lista_operacoes = {}
         self.glc = None
@@ -26,7 +28,9 @@ class Controller:
             self.lista_operacoes["Conjuntos gerados"] = [nf, vi]
             return resultado
         if op == 3:
-            glc_propria, ne, n, nf, vi = GLCPropria.glc_propria(self.glc)
+            glc_propria, glc_e_livre, glc_sem_ciclo, ne, n, nf, vi = GLCPropria.glc_propria(self.glc)
+            self.lista_operacoes["GLC &-livre"] = glc_e_livre
+            self.lista_operacoes["GLC Sem Ciclos"] = glc_sem_ciclo
             self.lista_operacoes["Conjuntos gerados"] = [nf, vi, ne, n]
             self.lista_operacoes["GLC Final"] = glc_propria
             return glc_propria
