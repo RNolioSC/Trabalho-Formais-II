@@ -38,7 +38,7 @@ class Controller:
             return glc
         if op == 6:
             glc, rd, ri = EliminarRaE.eliminar_RaE(self.glc)
-            self.lista_operacoes["Tipo recursão"] = [rd, ri]
+            self.lista_operacoes["Tipo de recursão"] = [rd, ri]
             self.lista_operacoes["GLC Final"] = glc
             return glc
         if op == 7:
@@ -67,8 +67,11 @@ class Controller:
         self.lista_operacoes = {}
 
     def set_glc(self, input):
-        self.glc = Glc(input.get("1.0", END).splitlines(), input.get("1.0", END)[0])
+        self.glc = Glc(input.get("1.0", END).splitlines(), input.get("1.0", END).split('-')[0].replace(' ', ''))
         self.lista_operacoes["GLC Inicial"] = self.glc
+
+    def set_glc_existente(self, glc):
+        self.glc = glc
 
     def set_n_passos(self, n):
         self.n_passos = n

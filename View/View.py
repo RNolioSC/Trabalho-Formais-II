@@ -153,7 +153,7 @@ class View:
         self.resultados = self.controller.exec_operations(self.operacao)
 
         if self.operacao not in [1, 2, 4]:
-            self.formata_glc(self.resultados)
+            self.formata_glc(self.output_glc, self.resultados)
         else:
             if self.operacao == 1:
                 msg = "A gramática gera L(G) vazia" if self.resultados else "A gramática gera L(G) não vazia"
@@ -169,6 +169,16 @@ class View:
             self.lista_operacoes.insert(END, keys)
 
         self.lista_operacoes.bind("<Double-1>", self.formata_lista_operacoes)
+        self.output_glc.bind("<Button-3>", self.formata_saida_entrada)
+
+    def formata_saida_entrada(self, event):
+        select = self.lista_operacoes.curselection()
+        opcao_escolhida = self.lista_operacoes.get(select[0])
+        result = self.controller.get_lista_operacoes()[opcao_escolhida]
+
+        self.controller.set_glc_existente(result)
+        self.input.delete("1.0", END)
+        self.formata_glc(self.input, result)
 
     def formata_lista_operacoes(self, event):
         select = self.lista_operacoes.curselection()
@@ -181,15 +191,24 @@ class View:
             count = 0
             for conjunto in result:
                 linha = tipo_conjunto[count]
-                linha += str(conjunto) + '\n'
+                linha += (', '.join(conjunto) if conjunto else 'Não há') + '\n'
                 self.output_glc.insert(END, linha)
                 count += 1
+        elif opcao_escolhida == 'Tipo de recursão':
+            output = ' - '.join(str(result[0]))
+            self.output_glc.insert(END, 'Recursão direta: ' + (output if result[0] else 'Não há') +'\n')
+
+            list_itens = []
+            for item in result[1].values():
+                list_itens += item
+            output = ' - '.join(list_itens)
+
+            self.output_glc.insert(END, 'Recursão indireta: ' + (output if result[1] else 'Não há'))
         else:
-            self.formata_glc(result)
+            self.formata_glc(self.output_glc, result)
 
-    def formata_glc(self, glc):
+    def formata_glc(self, field_text, glc):
         dict_glc = glc.get_dict_glc()
-
         output = ''
 
         # Seta simbolo inicial como primeiro simbolo
@@ -199,7 +218,7 @@ class View:
                 output += simbolo + ' '
             output += '| '
         output = output[:-2]
-        self.output_glc.insert(END, output)
+        field_text.insert(END, output)
 
         # Seta os demais simbolos
         for simbolos in dict_glc.keys():
@@ -211,7 +230,7 @@ class View:
                         output += simbolo + ' '
                     output += '| '
                 output = '\n' + output[:-2]
-                self.output_glc.insert(END, output)
+                field_text.insert(END, output)
 
     # Limpa o campo de texto
     def clear_all(self):

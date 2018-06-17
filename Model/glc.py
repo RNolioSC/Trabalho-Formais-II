@@ -37,13 +37,14 @@ class Glc:
 
                     if simbolo != '':
                         lista_prod.append(simbolo)
-                    if contador == len(lines):
-                        new_dict_glc[nt].append(lista_prod)
                 else:
                     new_dict_glc[nt].append(lista_prod)
                     lista_prod = []
 
                 contador += 1
+
+            if simbolo != '':
+                new_dict_glc[nt].append(lista_prod)
 
         return new_dict_glc
 
