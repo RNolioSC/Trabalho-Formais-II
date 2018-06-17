@@ -1,1 +1,2 @@
-S-> aS | aXb | c
+S -> a X | X a |&
+X -> a | b | S

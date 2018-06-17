@@ -8,9 +8,14 @@ class EliminarSimbolosInuteis:
     @staticmethod
     def eliminar_simbolos_inuteis(glc):
         glc_ferteis, Nf = EliminarSimbolosInuteis.eliminar_inferteis(glc)
-        glc_alcancaveis, Na = EliminarSimbolosInuteis.eliminar_inalcancaveis(glc_ferteis)
 
-        return glc_alcancaveis, Na
+        # Verifica se não foi eliminado todas as produções
+        if glc_ferteis.get_dict_glc() == {}:
+            return glc_ferteis, Nf, []
+
+        glc_alcancaveis, Vi = EliminarSimbolosInuteis.eliminar_inalcancaveis(glc_ferteis)
+
+        return glc_alcancaveis, Nf, Vi
 
     @staticmethod
     def eliminar_inferteis(glc):
@@ -22,12 +27,12 @@ class EliminarSimbolosInuteis:
         tmp_N = []
 
         while N != tmp_N:
-            N = tmp_N
+            N = tmp_N.copy()
             for vn in dict_gr.keys():
                 for producoes in dict_gr[vn]:
                     for simbolo in producoes:
                         if (simbolo.islower() or simbolo in punctuation) and len(producoes) == 1 or simbolo in N:
-                            if vn not in N:
+                            if vn not in tmp_N:
                                 tmp_N.append(vn)
 
         # Simbolos para eliminar
@@ -58,7 +63,7 @@ class EliminarSimbolosInuteis:
         tmp_N = [glc.get_simbolo_inicial()]
 
         while N != tmp_N:
-            N = tmp_N
+            N = tmp_N.copy()
             for simbolo in N:
                 if not simbolo.islower() and simbolo not in punctuation:
                     for producoes in dict_glc[simbolo]:

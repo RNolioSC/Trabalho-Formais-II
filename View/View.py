@@ -143,17 +143,15 @@ class View:
         self.input.insert(INSERT, self.controller.carregar_expressao())
         self.input.delete("end-1c", END)
 
-    # Armazena a operação selecionada
-    def set_operacao(self, op):
-        self.operacao = op
-
     # Executar a operacao selecionada e exibe os resultados
     def exibir_resultados(self):
+        self.clear_all()
         self.controller.set_glc(self.input)
         if self.operacao == 5:
             self.controller.set_n_passos(5) # TODO criar uma var pra receber esse cara (Um messagebox, mais fácil)
 
         self.resultados = self.controller.exec_operations(self.operacao)
+
         if self.operacao not in [1, 2, 4]:
             self.formata_glc(self.resultados)
         else:
@@ -165,11 +163,29 @@ class View:
                 msg = "A gramática está fatorada" if self.resultados else "A gramática não está fatorada"
             messagebox.showinfo("Resultado da operação", msg)
 
-    def clear_text(self):
-        try:
-            self.output_glc.destroy()
-        except AttributeError:
-            pass
+        lista_operacao = self.controller.get_lista_operacoes()
+        self.lista_operacoes.delete(0, END)
+        for keys in lista_operacao.keys():
+            self.lista_operacoes.insert(END, keys)
+
+        self.lista_operacoes.bind("<Double-1>", self.formata_lista_operacoes)
+
+    def formata_lista_operacoes(self, event):
+        select = self.lista_operacoes.curselection()
+        opcao_escolhida = self.lista_operacoes.get(select[0])
+        result = self.controller.get_lista_operacoes()[opcao_escolhida]
+
+        self.output_glc.delete("1.0", END)
+        if opcao_escolhida == 'Conjuntos gerados':
+            tipo_conjunto = ['Nf: ', 'Vi: ', 'Ne: ', 'Na: ']
+            count = 0
+            for conjunto in result:
+                linha = tipo_conjunto[count]
+                linha += str(conjunto) + '\n'
+                self.output_glc.insert(END, linha)
+                count += 1
+        else:
+            self.formata_glc(result)
 
     def formata_glc(self, glc):
         dict_glc = glc.get_dict_glc()
@@ -196,3 +212,12 @@ class View:
                     output += '| '
                 output = '\n' + output[:-2]
                 self.output_glc.insert(END, output)
+
+    # Limpa o campo de texto
+    def clear_all(self):
+        self.output_glc.delete("1.0", END)
+        self.controller.set_lista_operacoes({})
+
+    # Armazena a operação selecionada
+    def set_operacao(self, op):
+        self.operacao = op

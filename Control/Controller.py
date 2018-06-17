@@ -18,17 +18,29 @@ class Controller:
 
     def exec_operations(self, op):
         if op == 1:
-            return LGoperations.eh_vazia(self.glc)
+            resultado, nf, vi = LGoperations.eh_vazia(self.glc)
+            self.lista_operacoes["Conjuntos gerados"] = [nf, vi]
+            return resultado
         if op == 2:
-            return LGoperations.eh_finita(self.glc)
+            resultado, nf, vi = LGoperations.eh_finita(self.glc)
+            self.lista_operacoes["Conjuntos gerados"] = [nf, vi]
+            return resultado
         if op == 3:
-            return GLCPropria.glc_propria(self.glc)
+            glc_propria, ne, n, nf, vi = GLCPropria.glc_propria(self.glc)
+            self.lista_operacoes["Conjuntos gerados"] = [nf, vi, ne, n]
+            self.lista_operacoes["GLC Final"] = glc_propria
+            return glc_propria
         if op == 4:
             return Fatoracao.esta_fatorada(self.glc)
         if op == 5:
-            return Fatoracao.eh_fatoravel(self.glc, self.n_passos)
+            glc, _ = Fatoracao.eh_fatoravel(self.glc, self.n_passos)
+            self.lista_operacoes["GLC Final"] = glc
+            return glc
         if op == 6:
-            return EliminarRaE.eliminar_RaE(self.glc)
+            glc, rd, ri = EliminarRaE.eliminar_RaE(self.glc)
+            self.lista_operacoes["Tipo recursão"] = [rd, ri]
+            self.lista_operacoes["GLC Final"] = glc
+            return glc
         if op == 7:
             pass
         if op == 8:
@@ -47,9 +59,15 @@ class Controller:
             return file.read()
     # -------------------------------
 
-    # Sets
+    # Sets e Gets
+    def get_lista_operacoes(self):
+        return self.lista_operacoes
+
+    def set_lista_operacoes(self, list_op):
+        self.lista_operacoes = {}
+
     def set_glc(self, input):
-        self.glc = Glc(input.get("1.0", END).splitlines())
+        self.glc = Glc(input.get("1.0", END).splitlines(), input.get("1.0", END)[0])
         self.lista_operacoes["GLC Inicial"] = self.glc
 
     def set_n_passos(self, n):

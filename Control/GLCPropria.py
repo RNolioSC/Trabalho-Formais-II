@@ -6,15 +6,20 @@ class GLCPropria:
 
     @staticmethod
     def glc_propria(glc):
-        glc_e_livre = GLCPropria.e_livre(glc) if GLCPropria.construir_NE(glc) else glc
-        new_glc = GLCPropria.remove_ciclos(glc_e_livre) if GLCPropria.verifica_ciclos(glc_e_livre) else glc_e_livre
-        glc_propria = EliminarSimbolosInuteis.eliminar_simbolos_inuteis(new_glc)
+        glc_e_livre, ne = GLCPropria.e_livre(glc) if GLCPropria.construir_NE(glc) else (glc, [])
+        new_glc, n = GLCPropria.remove_ciclos(glc_e_livre) if GLCPropria.verifica_ciclos(glc_e_livre) else (glc_e_livre, [])
+        glc_propria, nf, vi = EliminarSimbolosInuteis.eliminar_simbolos_inuteis(new_glc)
 
-        return glc_propria
+        return glc_propria, ne, n, nf, vi
 
     @staticmethod
     def e_livre(glc):
         ne = GLCPropria.construir_NE(glc)
+
+        # Se já é e_livre retorna a própria glc
+        if not ne:
+            return glc
+
         dict_glc = glc.get_dict_glc()
         new_dict_glc = {}
 
@@ -78,7 +83,9 @@ class GLCPropria:
         for simbolos in N:
             for prod_simples in N[simbolos]:
                 if simbolos != prod_simples:
-                    new_dict_glc[simbolos] += tmp_dict_glc[prod_simples]
+                    for prod in tmp_dict_glc[prod_simples]:
+                        if prod not in new_dict_glc[simbolos]:
+                            new_dict_glc[simbolos] += [prod]
 
         new_glc = Glc(new_dict_glc, glc.get_simbolo_inicial())
 
@@ -155,21 +162,20 @@ class GLCPropria:
     def verifica_ciclos(glc):
         dict_glc = glc.get_dict_glc()
         ja_visitados = []
-
-        for simbolos in dict_glc.keys():
-            if simbolos not in ja_visitados:
-                ja_visitados.append(simbolos)
-            for producoes in dict_glc[simbolos]:
+        novos_simbolos = [glc.get_simbolo_inicial()]
+        while novos_simbolos:
+            simbolo = novos_simbolos.pop(0)
+            for producoes in dict_glc[simbolo]:
                 if len(producoes) == 1 and not(producoes[0].islower() or producoes[0] in punctuation):
                     if producoes[0] in ja_visitados:
                         return True
                     ja_visitados.append(producoes[0])
+                    novos_simbolos.append(producoes[0])
         return False
 
 
 #x_ciclo = Glc({'S': [['A', 'ab'], ['A']], 'A': [['a', 'S', 'X'], ['X']], 'X': [['S']]}, 'S')
 #print(GLCPropria.construir_NE(x_ciclo))
-
 #print(x_ciclo.get_dict_glc())
 #x = GLCPropria.e_livre(x_ciclo)[0]
 #print(x.get_dict_glc())
