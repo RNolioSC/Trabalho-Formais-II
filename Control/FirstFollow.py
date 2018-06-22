@@ -52,12 +52,11 @@ class FirstFollow:
                             else:  # ex: para A->B, se '&' in B, entao incluir & em first de A
                                 if '&' not in first_a_temp:
                                     first_a_temp.append('&')
-                                # deletamos esta pendencia
-                                first_a_pendencias_novas.remove(pendencia)
 
                 # atualizando globalmente
-                del first[a]
-                first[a] = first_a_temp
+                #print(first[a] == first_a_temp)
+                # del first[a]  #TODO: nao eh necessario, pois ja eh atualizado, first_a_temp aponta para first[a]
+                # first[a] = first_a_temp
                 del first_pendencias[a]
                 if first_a_pendencias_novas:  # se ainda tiver pendencias
                     first_pendencias[a] = first_a_pendencias_novas
@@ -104,7 +103,7 @@ class FirstFollow:
         first_uniao = []
         for vn in ciclo:
             for k in first[vn]:
-                if k not in first_uniao:
+                if k not in first_uniao and k != '&':
                     first_uniao.append(k)
 
         # adicionando a uniao aos conjuntos first de todos os vn envolvidos
@@ -129,7 +128,7 @@ class FirstFollow:
             pend_temp.remove(prod_a_remover)
 
             # se & pertence ao first:
-            if '&' in first[i] and len(prod_a_remover) > 1:  # ex: A->BC, se B->&, add C como pendente
+            if '&' in first[prod_a_remover[0]] and len(prod_a_remover) > 1:  # ex: A->BC, se B->&, add C como pendente
                 pend_temp.append(prod_a_remover[1:])
             # else: ex: A->BC, mas nao tem B->&, entao nao fazemos nada.
             if pend_temp:
@@ -138,5 +137,5 @@ class FirstFollow:
         return first_pendencias
 
     @staticmethod
-    def follow(glc):
-        return True
+   def follow(glc, simbolo_inicial, first):
+        return glc
