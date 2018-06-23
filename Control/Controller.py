@@ -5,10 +5,13 @@ from Control.EliminarSimbolosInuteis import *
 from Control.Fatoracao import *
 from Control.LGoperations import *
 from Control.GLCPropria import *
+from Control.FirstFollow import *
 
 class Controller:
 
     # TODO Executar o algoritmo da gramática própria antes de executar a RaE
+    # TODO Expandir tamanho dos input/output
+    # TODO Add exceções onde necessário
 
     def __init__(self):
         self.lista_operacoes = {}
@@ -35,9 +38,13 @@ class Controller:
             self.lista_operacoes["GLC Final"] = glc_propria
             return glc_propria
         if op == 4:
-            return Fatoracao.esta_fatorada(self.glc)
+            esta_fatorada, first, vn_nao_fatorada = Fatoracao.esta_fatorada(self.glc)
+            self.lista_operacoes["First"] = first
+            if vn_nao_fatorada:
+                self.lista_operacoes["Vns Não Fatoradas"] = vn_nao_fatorada
+            return esta_fatorada
         if op == 5:
-            glc, _ = Fatoracao.eh_fatoravel(self.glc, self.n_passos)
+            eh_fatoravel, glc = Fatoracao.eh_fatoravel(self.glc, self.n_passos)
             self.lista_operacoes["GLC Final"] = glc
             return glc
         if op == 6:
@@ -46,11 +53,18 @@ class Controller:
             self.lista_operacoes["GLC Final"] = glc
             return glc
         if op == 7:
-            pass
+            first = FirstFollow.first(self.glc)
+            self.lista_operacoes["First"] = first
+            return first
         if op == 8:
-            pass
+            first = FirstFollow.first(self.glc)
+            self.lista_operacoes["First"] = first
+            follow = FirstFollow.follow(self.glc, first)
+            self.lista_operacoes["Follow"] = follow
+            return follow
         if op == 9:
-            pass
+            first = FirstFollow.first(self.glc)
+            self.lista_operacoes["First"] = first
 
 
     # Salvar/Carregar arquivo

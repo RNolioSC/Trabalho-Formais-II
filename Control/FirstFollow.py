@@ -1,7 +1,11 @@
+from Model.glc import *
 
 class FirstFollow:
+
     @staticmethod
-    def first(glc):
+    def first(glc_class):
+        glc = glc_class.get_dict_glc()
+
         vn = list(glc.keys())
         first = {}
         first_pendencias = {}  # formato: {A: [B,C]} ;  A recebe first de B e de C
@@ -137,5 +141,5 @@ class FirstFollow:
         return first_pendencias
 
     @staticmethod
-   def follow(glc, simbolo_inicial, first):
+    def follow(glc, simbolo_inicial, first):
         return glc

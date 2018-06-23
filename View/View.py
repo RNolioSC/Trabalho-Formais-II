@@ -152,7 +152,13 @@ class View:
 
         self.resultados = self.controller.exec_operations(self.operacao)
 
-        if self.operacao not in [1, 2, 4]:
+        if self.operacao in [7, 8, 9]:
+            opcao_escolhida = ('First' if self.operacao == 7 else 'Follow') if self.operacao != 9 else 'First NT'
+            for keys in self.resultados:
+                self.output_glc.insert(END, opcao_escolhida+' (' + keys + ') : ' + ' - '.join(self.resultados[keys]) + '\n')
+        elif self.operacao == 5:
+            self.output_glc.insert("Vns NÃO Fatoradas: " + " - ".join(self.resultados))
+        elif self.operacao not in [1, 2, 4]:
             self.formata_glc(self.output_glc, self.resultados)
         else:
             if self.operacao == 1:
@@ -173,7 +179,12 @@ class View:
 
     def formata_saida_entrada(self, event):
         select = self.lista_operacoes.curselection()
-        opcao_escolhida = self.lista_operacoes.get(select[0])
+
+        try:
+            opcao_escolhida = self.lista_operacoes.get(select[0])
+        except IndexError:
+            opcao_escolhida = 'GLC Inicial'
+
         result = self.controller.get_lista_operacoes()[opcao_escolhida]
 
         self.controller.set_glc_existente(result)
@@ -204,11 +215,19 @@ class View:
             output = ' - '.join(list_itens)
 
             self.output_glc.insert(END, 'Recursão indireta: ' + (output if result[1] else 'Não há'))
+        elif opcao_escolhida == 'First' or opcao_escolhida == 'Follow' or opcao_escolhida == 'First NT':
+            for keys in result:
+                self.output_glc.insert(END, opcao_escolhida+' (' + keys + ') : ' + ' - '.join(result[keys]) + '\n')
         else:
             self.formata_glc(self.output_glc, result)
 
     def formata_glc(self, field_text, glc):
-        dict_glc = glc.get_dict_glc()
+        try:
+            dict_glc = glc.get_dict_glc()
+        except AttributeError:
+            messagebox.showinfo("Ação bloqueada", "Não é uma GLC!")
+            return
+
         output = ''
 
         # Seta simbolo inicial como primeiro simbolo

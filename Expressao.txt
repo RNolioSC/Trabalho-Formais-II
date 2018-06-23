@@ -1,2 +1,2 @@
-S -> a X | X a |&
-X -> a | b | S
+S -> a S | c
+X -> b X | c
