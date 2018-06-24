@@ -1,5 +1,6 @@
 
 class FirstFollow:
+
     @staticmethod
     def first(gram):
         glc = gram.get_dict_glc()
@@ -54,7 +55,7 @@ class FirstFollow:
                 del first_pendencias[a]
                 if first_a_pendencias_novas:  # se ainda tiver pendencias
                     first_pendencias[a] = first_a_pendencias_novas
-                    # else:  # este vn nao tem mais nada pendente
+                # else:  # este vn nao tem mais nada pendente
 
             if not ocorreram_modificacoes:  # entao encontramos um ciclo
                 first_pendencias = FirstFollow.encontrar_1_ciclo(first, first_pendencias)
@@ -81,7 +82,7 @@ class FirstFollow:
 
             if caminhos[0][0] in ciclo:  # encontramos o ciclo
                 while True:
-                    if ciclo[0] != caminhos[0][0]:  # eh necessario, ex: S->C->C, deve pegar somente C
+                    if ciclo[0] != caminhos[0][0]:  # ex: S->C->C, pega somente C
                         ciclo.pop(0)
                     else:
                         break
@@ -129,5 +130,98 @@ class FirstFollow:
         return first_pendencias
 
     @staticmethod
-    def follow(gram, simbolo_inicial, first):
-        return first
+    def follow(gram, first):
+        glc = gram.get_dict_glc()
+        simbolo_inicial = gram.get_simbolo_inicial()
+
+        # passo 1
+        follow = {simbolo_inicial: ['$']}
+        for vn in glc:
+            if vn != simbolo_inicial:
+                follow[vn] = []
+
+        prods_n = {}  # todas as producoes de tamanho > 1
+        prods_1 = {}  # todas as producoes, de tamanho 1, somente Vns; e as pendentes
+
+        # separamos as prods simples das demais
+        for vn in glc:
+            prods_1[vn] = []
+            prods_n[vn] = []
+            for prod_temp in glc[vn]:
+                if len(prod_temp) > 1:
+                    prods_n[vn].append(prod_temp)
+                else:
+                    if prod_temp[0] in glc:
+                        prods_1[vn].append(prod_temp)
+
+        # passo 2:
+        while prods_n:
+            for vn in prods_n:
+                prods_n_new = []
+                formas_sent = prods_n[vn]
+                for form_sent in formas_sent:  # ex: lado direito de S->aB
+                    if len(form_sent) == 1:
+                        if form_sent[0] not in glc:  # eh um vt
+                            continue
+                        else:  # ex: S->A
+                            if form_sent[0] != vn:  # para nao adicionar S->S
+                                prods_1[form_sent[0]].append(vn)
+
+                    else:  # forma sentencial de tamanho >1
+                        if form_sent[0] not in glc:  # eh um vt, ex: S->aB, avaliando a
+                            prods_n_new.append(form_sent[1:])
+                            continue
+
+                        else:  # eh um vn, ex: S->Ab, avaliando A
+                            if form_sent[1] not in glc:  # o proximo simbolo eh um vt
+                                if form_sent[1] not in follow[form_sent[0]]:
+                                    follow[form_sent[0]].append(form_sent[1])
+                                    if len(form_sent) > 2:
+                                        prods_n_new.append(form_sent[2:])
+
+                            else:  # o proximo simbolo eh um vn
+                                first_temp = first[form_sent[1]]
+                                for n in first_temp:
+                                    if n != '&':
+                                        if n not in follow[form_sent[0]]:
+                                            follow[form_sent[0]].append(n)
+                                if '&' in first_temp:
+                                    # ex: S->ABc, avaliando A, com & in first(B), adicionamos S->Ac para ser processado
+                                    nova_prod = [form_sent[0]]
+                                    if len(form_sent) > 2:
+                                        for j in form_sent[2:]:
+                                            nova_prod.append(j)
+                                    prods_n_new.append(nova_prod)
+
+                                # falta processar o resto da forma sentencial
+                                prods_n_new.append(form_sent[1:])
+
+                # atualizando a lista
+                prods_n[vn] = prods_n_new
+            # se nao tiverem mais formas sentenciais, deletar do dicionario ex: {'S': []}
+            vns_temp = list(prods_n.keys())
+            for m in vns_temp:
+                if not prods_n[m]:
+                    del prods_n[m]
+                    
+        # passo 3
+        while prods_1:
+            vns_temp = list(prods_1.keys())
+            for m in vns_temp:
+                if not prods_1[m]:
+                    del prods_1[m]
+            for vn in prods_1:
+
+                prods_1_new = []
+                pendencias = prods_1[vn]
+                for pend in pendencias:
+                    for i in follow[pend]:
+                        if i not in follow[vn]:
+                            follow[vn].append(i)
+                    if pend not in prods_1:
+                        continue
+                    for j in prods_1[pend]:
+                        if j not in prods_1_new and j != vn:  # para evitar {'S':['S']}
+                            prods_1_new.append(j)
+                prods_1[vn] = prods_1_new
+        return follow
