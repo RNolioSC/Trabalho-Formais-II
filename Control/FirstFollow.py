@@ -23,7 +23,7 @@ class FirstFollow:
                     first_a_pendentes.append(i)
             if first_a_pendentes:  # se existir alguma pendencia:
                 first_pendencias[a] = first_a_pendentes
-            first[a] = first_a  # adicionamos o first deste estado no dicionario
+            first[a] = first_a  # adicionamos o first deste vn no dicionario
 
         while first_pendencias:  # enquanto houver algum vn com pendencias
             ocorreram_modificacoes = False  # usamos este flag pra detectar deadlocks
@@ -225,3 +225,45 @@ class FirstFollow:
                             prods_1_new.append(j)
                 prods_1[vn] = prods_1_new
         return follow
+    
+
+    @staticmethod
+    def first_nt(gram, first):
+        glc = gram.get_dict_glc()
+        vn = list(glc.keys())
+        first_nt = {}
+        first_pendencias = {}  # formato: {A: [B,C]} ;  A recebe first de B e de C
+        for a in vn:
+            first_a = []
+            first_a_pendentes = []  # eg: se S->AB|C, [[A, B],[C]] entra neste conjunto
+            producoes_a = glc[a]  # retorna o lado direito das producoes #eg: [ [a , S], [X, A] ]
+
+            for i in producoes_a:  # eg: [a, S]
+                if i[0] in vn:  # eh um vn  #eg: [X, A]
+                    first_a.append(i[0])
+                    if '&' in first[i[0]]:
+                        first_a_pendentes.append(i[1:])
+
+            if first_a_pendentes:  # se existir alguma pendencia:
+                first_pendencias[a] = first_a_pendentes
+            first_nt[a] = first_a  # adicionamos o first_nt deste vn no dicionario
+
+        while first_pendencias:  # enquanto houver algum vn com pendencias
+            vns_pendentes = list(first_pendencias.keys())
+            for a in vns_pendentes:
+                first_a_pendencias_novas = []
+                for pendencia in first_pendencias[a]:  # para cada pendencia de vn, formato [A, B]
+                    if pendencia[0] not in vn:  # eh um vt
+                        continue
+                    else:  # eh um vn
+                        first_nt[a].append(pendencia[0])
+                        if '&' in first[pendencia[0]]:
+                            first_a_pendencias_novas.append(pendencia[1:])
+                       
+                # atualizando globalmente
+                del first_pendencias[a]
+                if first_a_pendencias_novas:  # se ainda tiver pendencias
+                    first_pendencias[a] = first_a_pendencias_novas
+                # else:  # este vn nao tem mais nada pendente
+
+        return first_nt
