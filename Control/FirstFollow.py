@@ -1,11 +1,8 @@
-from Model.glc import *
 
 class FirstFollow:
-
     @staticmethod
-    def first(glc_class):
-        glc = glc_class.get_dict_glc()
-
+    def first(gram):
+        glc = gram.get_dict_glc()
         vn = list(glc.keys())
         first = {}
         first_pendencias = {}  # formato: {A: [B,C]} ;  A recebe first de B e de C
@@ -18,9 +15,7 @@ class FirstFollow:
 
             for i in producoes_a:  # eg: [a, S]
                 if i[0] not in vn:  # eh um vt  # eg: a
-                    if i[0] not in first_a:
-                        first_a.append(i[0])
-                    # else: (i[0] in first_a) ja esta no first, nao modificamos
+                    first_a.append(i[0])
 
         # parte 2 e 3
                 else:  # eh um vn  #eg: [X, A]
@@ -38,8 +33,7 @@ class FirstFollow:
                 for pendencia in first_pendencias[a]:  # para cada pendencia de vn, formato [A, B]
 
                     if pendencia[0] not in vn:  # eh um vt
-                        if pendencia[0] not in first_a_temp:
-                            first_a_temp.append(pendencia[0])
+                        first_a_temp.append(pendencia[0])
                         ocorreram_modificacoes = True
                     else:  # eh um vn
                         if pendencia[0] in first_pendencias:  # pulamos
@@ -48,19 +42,15 @@ class FirstFollow:
                         first_vns_producao = first[pendencia[0]]  # ex: para A->BC, A recebe first de B = [a,b,c,...]
                         ocorreram_modificacoes = True
                         for i in first_vns_producao:  # para cada elemento do first_vns_producao
-                            if i not in first_a_temp and i != '&':  # este simbolo ainda nao esta no first, e nao eh &
+                            if i != '&':
                                 first_a_temp.append(i)
                         if '&' in first_vns_producao:
                             if len(pendencia) > 1:  # ex: para A->BC, se '&' in B:
                                 first_a_pendencias_novas.append(pendencia[1:])  # checamos o resto da producao
                             else:  # ex: para A->B, se '&' in B, entao incluir & em first de A
-                                if '&' not in first_a_temp:
-                                    first_a_temp.append('&')
+                                first_a_temp.append('&')
 
                 # atualizando globalmente
-                #print(first[a] == first_a_temp)
-                # del first[a]  #TODO: nao eh necessario, pois ja eh atualizado, first_a_temp aponta para first[a]
-                # first[a] = first_a_temp
                 del first_pendencias[a]
                 if first_a_pendencias_novas:  # se ainda tiver pendencias
                     first_pendencias[a] = first_a_pendencias_novas
@@ -91,7 +81,7 @@ class FirstFollow:
 
             if caminhos[0][0] in ciclo:  # encontramos o ciclo
                 while True:
-                    if ciclo[0] != caminhos[0][0]:  # eh necessario, ex: S->C->C, deve pegar somete C
+                    if ciclo[0] != caminhos[0][0]:  # eh necessario, ex: S->C->C, deve pegar somente C
                         ciclo.pop(0)
                     else:
                         break
@@ -107,16 +97,14 @@ class FirstFollow:
         first_uniao = []
         for vn in ciclo:
             for k in first[vn]:
-                if k not in first_uniao and k != '&':
-                    first_uniao.append(k)
+                first_uniao.append(k)
 
         # adicionando a uniao aos conjuntos first de todos os vn envolvidos
         for vn in ciclo:
             first_temp = first[vn]
             del first[vn]
             for m in first_uniao:
-                if m not in first_temp:
-                    first_temp.append(m)
+                first_temp.append(m)
             first[vn] = first_temp
 
         # removemos as prods do ciclo das pendentes
@@ -141,5 +129,5 @@ class FirstFollow:
         return first_pendencias
 
     @staticmethod
-    def follow(glc, simbolo_inicial, first):
-        return glc
+    def follow(gram, simbolo_inicial, first):
+        return first
