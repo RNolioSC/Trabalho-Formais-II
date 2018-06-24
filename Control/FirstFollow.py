@@ -1,6 +1,6 @@
 
 class FirstFollow:
-    
+
     @staticmethod
     def first(gram):
         glc = gram.get_dict_glc()
