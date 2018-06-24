@@ -2,6 +2,7 @@ from tkinter import messagebox
 from tkinter import *
 from Control.Controller import *
 from Model.glc import *
+from tkinter.simpledialog import askstring
 
 class View:
 
@@ -148,16 +149,22 @@ class View:
         self.clear_all()
         self.controller.set_glc(self.input)
         if self.operacao == 5:
-            self.controller.set_n_passos(5) # TODO criar uma var pra receber esse cara (Um messagebox, mais fácil)
+            n_passos = askstring('Número de passos', 'Insira a quantidade de passos')
+            print(n_passos)
+            self.controller.set_n_passos(int(n_passos)) # TODO criar uma var pra receber esse cara (Um messagebox, mais fácil)
 
         self.resultados = self.controller.exec_operations(self.operacao)
 
         if self.operacao in [7, 8, 9]:
             opcao_escolhida = ('First' if self.operacao == 7 else 'Follow') if self.operacao != 9 else 'First NT'
             for keys in self.resultados:
-                self.output_glc.insert(END, opcao_escolhida+' (' + keys + ') : ' + ' - '.join(self.resultados[keys]) + '\n')
+                self.output_glc.insert(END, opcao_escolhida+' (' + keys + ') : ' + ' - '.join(list(set(self.resultados[keys]))) + '\n')
         elif self.operacao == 5:
-            self.output_glc.insert("Vns NÃO Fatoradas: " + " - ".join(self.resultados))
+            if not self.resultados:
+                messagebox.showinfo("Resultado da operação", "Foi possível fatorar a gramática em " + n_passos +" ou menos passos")
+            else:
+                messagebox.showinfo("Resultado da operação", "Não foi possível fatorar a gramática em " + n_passos + " passos")
+                self.output_glc.insert(END, "Vns NÃO Fatoradas: " + " - ".join(self.resultados))
         elif self.operacao not in [1, 2, 4]:
             self.formata_glc(self.output_glc, self.resultados)
         else:
@@ -206,7 +213,7 @@ class View:
                 self.output_glc.insert(END, linha)
                 count += 1
         elif opcao_escolhida == 'Tipo de recursão':
-            output = ' - '.join(str(result[0]))
+            output = ' - '.join(result[0])
             self.output_glc.insert(END, 'Recursão direta: ' + (output if result[0] else 'Não há') +'\n')
 
             list_itens = []
@@ -218,6 +225,8 @@ class View:
         elif opcao_escolhida == 'First' or opcao_escolhida == 'Follow' or opcao_escolhida == 'First NT':
             for keys in result:
                 self.output_glc.insert(END, opcao_escolhida+' (' + keys + ') : ' + ' - '.join(result[keys]) + '\n')
+        elif opcao_escolhida == 'Vns Não Fatoradas':
+            self.output_glc.insert(END, 'Vns não fatoradas: ' + '-'.join(result))
         else:
             self.formata_glc(self.output_glc, result)
 
@@ -229,27 +238,27 @@ class View:
             return
 
         output = ''
+        if dict_glc != {}:
+            # Seta simbolo inicial como primeiro simbolo
+            output += glc.get_simbolo_inicial() + '-> '
+            for producoes in dict_glc[glc.get_simbolo_inicial()]:
+                for simbolo in producoes:
+                    output += simbolo + ' '
+                output += '| '
+            output = output[:-2]
+            field_text.insert(END, output)
 
-        # Seta simbolo inicial como primeiro simbolo
-        output += glc.get_simbolo_inicial() + '-> '
-        for producoes in dict_glc[glc.get_simbolo_inicial()]:
-            for simbolo in producoes:
-                output += simbolo + ' '
-            output += '| '
-        output = output[:-2]
-        field_text.insert(END, output)
-
-        # Seta os demais simbolos
-        for simbolos in dict_glc.keys():
-            if simbolos != glc.get_simbolo_inicial():
-                output = ''
-                output += simbolos + '-> '
-                for producoes in dict_glc[simbolos]:
-                    for simbolo in producoes:
-                        output += simbolo + ' '
-                    output += '| '
-                output = '\n' + output[:-2]
-                field_text.insert(END, output)
+            # Seta os demais simbolos
+            for simbolos in dict_glc.keys():
+                if simbolos != glc.get_simbolo_inicial():
+                    output = ''
+                    output += simbolos + '-> '
+                    for producoes in dict_glc[simbolos]:
+                        for simbolo in producoes:
+                            output += simbolo + ' '
+                        output += '| '
+                    output = '\n' + output[:-2]
+                    field_text.insert(END, output)
 
     # Limpa o campo de texto
     def clear_all(self):

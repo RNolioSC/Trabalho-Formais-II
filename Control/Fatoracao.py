@@ -1,19 +1,25 @@
 from Model.glc import *
 from Control.FirstFollow import *
+from Control.EliminarRaE import *
 import copy
 
 class Fatoracao:
 
     @staticmethod
     def eh_fatoravel(glc, n_passos):
+        glc = EliminarRaE.eliminar_RaE(glc)[0]
         dict_glc = glc.get_dict_glc()
         new_dict_glc = copy.deepcopy(dict_glc)
-        esta_fatorada, first, vn_nao_fatorada = Fatoracao.esta_fatorada(glc)
 
-        for i in range(n_passos):
-            if esta_fatorada:
-                return True, new_dict_glc
+        for i in range(0, n_passos-1):
+            esta_fatorada, first, vn_nao_fatorada = Fatoracao.esta_fatorada(Glc(new_dict_glc, glc.get_simbolo_inicial()))
+
+            if esta_fatorada or not vn_nao_fatorada:
+                return True, Glc(new_dict_glc, glc.get_simbolo_inicial()), None
             else:
+                # Atualiza old dict
+                dict_glc = copy.deepcopy(new_dict_glc)
+
                 # A cada passo, se fatora uma vn
                 vn = vn_nao_fatorada.pop(0)
 
@@ -56,7 +62,10 @@ class Fatoracao:
                     new_dict_glc[vn].append([vt, novo_simbolo])
                     novo_simbolo += '1'
 
-        return True, new_dict_glc
+        new_glc = Glc(new_dict_glc, glc.get_simbolo_inicial())
+        esta_fatorada, first, vn_nao_fatorada = Fatoracao.esta_fatorada(new_glc)
+
+        return (True, new_glc, None) if esta_fatorada else (False, new_glc, vn_nao_fatorada)
 
     @staticmethod
     def eh_possivel_fatoracao_direta(first, vn, vt_duplicada, producoes_para_fatorar):
@@ -81,7 +90,8 @@ class Fatoracao:
 
         return (True, first, None) if not vn_nao_fatorada else (False, first, vn_nao_fatorada)
 
+
 # first = {'S': ['a', 'a', 'a'], 'X': ['z', 'a', 'a'], 'Y': ['a', 'a']}
-#y = Glc({'S': [['a', 'S'], ['a', 'X'], ['a']], 'X': [['b', 'X'], ['b']]}, 'S')
+#y = Glc({'S': [['a', 'S', 'b'], ['A', 'C']], 'A': [['a', 'A', 'b'], ['a', 'D'], ['b', 'E']], 'C': [['c', 'C'], ['&']], 'D': [['a', 'D'], ['&']], 'E': [['b', 'E'], ['&']]}, 'S')
 #y = Glc({'S': [['a', 'S'], ['X']], 'X': [['Y'], ['z']], 'Y': [['a', 'Y'], ['a']]}, 'S')
 #print(Fatoracao.eh_fatoravel(y, 2))

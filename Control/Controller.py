@@ -9,9 +9,9 @@ from Control.FirstFollow import *
 
 class Controller:
 
-    # TODO Executar o algoritmo da gramática própria antes de executar a RaE
     # TODO Expandir tamanho dos input/output
     # TODO Add exceções onde necessário
+    # TODO MSG para avisar se possui ou não RaE
 
     def __init__(self):
         self.lista_operacoes = {}
@@ -23,19 +23,23 @@ class Controller:
 
     def exec_operations(self, op):
         if op == 1:
-            resultado, nf, vi = LGoperations.eh_vazia(self.glc)
+            resultado, nf, vi, glc_ssi = LGoperations.eh_vazia(self.glc)
+            self.lista_operacoes["GLC Sem Símbolos Inúteis"] = glc_ssi
             self.lista_operacoes["Conjuntos gerados"] = [nf, vi]
             return resultado
         if op == 2:
-            resultado, nf, vi = LGoperations.eh_finita(self.glc)
-            self.lista_operacoes["Conjuntos gerados"] = [nf, vi]
+            resultado, nf, vi, na, glc_sem_inuteis, glc_sem_ciclo = LGoperations.eh_finita(self.glc)
+            self.lista_operacoes["GLC Sem Ciclos"] = glc_sem_ciclo
+            self.lista_operacoes["GLC Sem Símbolos Inúteis"] = glc_sem_inuteis
+            self.lista_operacoes["Conjuntos gerados"] = [nf, vi, [], na]
             return resultado
         if op == 3:
-            glc_propria, glc_e_livre, glc_sem_ciclo, ne, n, nf, vi = GLCPropria.glc_propria(self.glc)
+            glc_propria, glc_fertil, glc_e_livre, glc_sem_ciclo, ne, n, nf, vi = GLCPropria.glc_propria(self.glc)
             self.lista_operacoes["GLC &-livre"] = glc_e_livre
             self.lista_operacoes["GLC Sem Ciclos"] = glc_sem_ciclo
-            self.lista_operacoes["Conjuntos gerados"] = [nf, vi, ne, n]
+            self.lista_operacoes["GLC Fértil"] = glc_fertil
             self.lista_operacoes["GLC Final"] = glc_propria
+            self.lista_operacoes["Conjuntos gerados"] = [nf, vi, ne, n]
             return glc_propria
         if op == 4:
             esta_fatorada, first, vn_nao_fatorada = Fatoracao.esta_fatorada(self.glc)
@@ -44,13 +48,20 @@ class Controller:
                 self.lista_operacoes["Vns Não Fatoradas"] = vn_nao_fatorada
             return esta_fatorada
         if op == 5:
-            eh_fatoravel, glc = Fatoracao.eh_fatoravel(self.glc, self.n_passos)
+            eh_fatoravel, glc, vn_nao_fatorada = Fatoracao.eh_fatoravel(self.glc, self.n_passos)
             self.lista_operacoes["GLC Final"] = glc
-            return glc
+            if vn_nao_fatorada:
+                self.lista_operacoes["Vns Não Fatoradas"] = vn_nao_fatorada
+            return vn_nao_fatorada
         if op == 6:
-            glc, rd, ri = EliminarRaE.eliminar_RaE(self.glc)
-            self.lista_operacoes["Tipo de recursão"] = [rd, ri]
+            glc, rd, ri, glc_propria, glc_fertil, glc_e_livre, glc_sem_ciclos, ne, na, nf, vi = EliminarRaE.eliminar_RaE(self.glc)
+            self.lista_operacoes["GLC &-livre"] = glc_e_livre
+            self.lista_operacoes["GLC Sem Ciclos"] = glc_sem_ciclos
+            self.lista_operacoes["GLC Fértil"] = glc_fertil
+            self.lista_operacoes["GLC Própria"] = glc_propria
             self.lista_operacoes["GLC Final"] = glc
+            self.lista_operacoes["Conjuntos gerados"] = [nf, vi, ne, na]
+            self.lista_operacoes["Tipo de recursão"] = [rd, ri]
             return glc
         if op == 7:
             first = FirstFollow.first(self.glc)
@@ -82,7 +93,7 @@ class Controller:
         return self.lista_operacoes
 
     def set_lista_operacoes(self, list_op):
-        self.lista_operacoes = {}
+        self.lista_operacoes = list_op
 
     def set_glc(self, input):
         self.glc = Glc(input.get("1.0", END).splitlines(), input.get("1.0", END).split('-')[0].replace(' ', ''))

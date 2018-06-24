@@ -1,4 +1,5 @@
 from Model.glc import *
+from Control.GLCPropria import *
 import copy
 
 
@@ -6,13 +7,14 @@ class EliminarRaE:
 
     @staticmethod
     def eliminar_RaE(glc):
+        glc_propria, glc_fertil, glc_e_livre, glc_sem_ciclos, ne, n, nf, vi = GLCPropria.glc_propria(glc)
 
         # Verifica se tem recursão a esquerda direta/indireta
-        rec_direta, rec_indireta = EliminarRaE.verificar_recursao(glc)
+        rec_direta, rec_indireta = EliminarRaE.verificar_recursao(glc_propria)
         if not(rec_direta or len(rec_indireta.values()) != 0):
-            return glc, rec_direta, rec_indireta
+            return glc_propria, rec_direta, rec_indireta, glc_propria, glc_fertil, glc_e_livre, glc_sem_ciclos, ne, n, nf, vi
 
-        dict_glc = glc.get_dict_glc()
+        dict_glc = glc_propria.get_dict_glc()
         new_dict_glc = copy.deepcopy(dict_glc)
         tmp_dict_glc = copy.deepcopy(new_dict_glc)
         rec_indireta_consulta = [simbolo for simbolos in rec_indireta.keys() for simbolo in rec_indireta[simbolos]]
@@ -48,7 +50,7 @@ class EliminarRaE:
             tmp_dict_glc = copy.deepcopy(new_dict_glc)
 
         new_glc = Glc(new_dict_glc, glc.get_simbolo_inicial())
-        return new_glc, rec_direta, rec_indireta
+        return new_glc, rec_direta, rec_indireta, glc_propria, glc_fertil, glc_e_livre, glc_sem_ciclos, ne, n, nf, vi
 
     @staticmethod
     def verificar_recursao(glc):

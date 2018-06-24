@@ -8,9 +8,9 @@ class GLCPropria:
     def glc_propria(glc):
         glc_e_livre, ne = GLCPropria.e_livre(glc) if GLCPropria.construir_NE(glc) else (glc, [])
         glc_sem_ciclos, n = GLCPropria.remove_ciclos(glc_e_livre) if GLCPropria.verifica_ciclos(glc_e_livre) else (glc_e_livre, [])
-        glc_propria, nf, vi = EliminarSimbolosInuteis.eliminar_simbolos_inuteis(glc_sem_ciclos)
+        glc_propria, glc_fertil, nf, vi = EliminarSimbolosInuteis.eliminar_simbolos_inuteis(glc_sem_ciclos)
 
-        return glc_propria, glc_e_livre, glc_sem_ciclos, ne, n, nf, vi
+        return glc_propria, glc_fertil, glc_e_livre, glc_sem_ciclos, ne, n, nf, vi
 
     @staticmethod
     def e_livre(glc):
@@ -36,7 +36,9 @@ class GLCPropria:
                 if '&' not in producoes:
                     new_dict_glc[simbolo].append(producoes)
             if producoes_validas:
-                new_dict_glc[simbolo] += producoes_validas[0]
+                for producoes in producoes_validas[0]:
+                    if producoes not in new_dict_glc[simbolo]:
+                        new_dict_glc[simbolo].append(producoes)
 
         new_glc = Glc(new_dict_glc, glc.get_simbolo_inicial())
 
@@ -50,7 +52,7 @@ class GLCPropria:
     @staticmethod
     def remove_ciclos(glc):
         if not GLCPropria.verifica_ciclos(glc):
-            return glc
+            return glc, None
 
         dict_glc = glc.get_dict_glc()
         new_dict_glc = {}
@@ -151,6 +153,9 @@ class GLCPropria:
                                 permite_e = False
                                 break
                             elif len(producoes) == 1 and elemento not in ne:
+                                permite_e = False
+                                break
+                            elif elemento.isupper() and elemento not in ne:
                                 permite_e = False
                                 break
                         if permite_e:

@@ -12,10 +12,9 @@ class EliminarSimbolosInuteis:
         # Verifica se não foi eliminado todas as produções
         if glc_ferteis.get_dict_glc() == {}:
             return glc_ferteis, Nf, []
-
         glc_alcancaveis, Vi = EliminarSimbolosInuteis.eliminar_inalcancaveis(glc_ferteis)
 
-        return glc_alcancaveis, Nf, Vi
+        return glc_alcancaveis, glc_ferteis, Nf, Vi
 
     @staticmethod
     def eliminar_inferteis(glc):
@@ -25,15 +24,19 @@ class EliminarSimbolosInuteis:
         # Conjunto N
         N = None
         tmp_N = []
+        existe_vn = False
 
         while N != tmp_N:
             N = tmp_N.copy()
             for vn in dict_gr.keys():
                 for producoes in dict_gr[vn]:
                     for simbolo in producoes:
-                        if (simbolo.islower() or simbolo in punctuation) and len(producoes) == 1 or simbolo in N:
-                            if vn not in tmp_N:
-                                tmp_N.append(vn)
+                        if simbolo.isupper() and simbolo not in N:
+                            existe_vn = True
+                            break
+                    if not existe_vn and vn not in N:
+                        tmp_N.append(vn)
+                    existe_vn = False
 
         # Simbolos para eliminar
         dead_symbols = [vn for vn in dict_gr.keys() if vn not in N]
@@ -48,8 +51,10 @@ class EliminarSimbolosInuteis:
                             pos_para_eliminar.append(pos_producoes)
                     for pos in pos_para_eliminar:
                         del new_dict_glc[vn][pos]
+                    dict_gr = copy.deepcopy(new_dict_glc)
                     pos_para_eliminar = []
             del new_dict_glc[simbolo]
+            dict_gr = copy.deepcopy(new_dict_glc)
 
         return Glc(new_dict_glc, glc.get_simbolo_inicial()), N
 
