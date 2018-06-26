@@ -203,7 +203,7 @@ class FirstFollow:
             for m in vns_temp:
                 if not prods_n[m]:
                     del prods_n[m]
-                    
+
         # passo 3
         while prods_1:
             vns_temp = list(prods_1.keys())
@@ -215,17 +215,16 @@ class FirstFollow:
                 prods_1_new = []
                 pendencias = prods_1[vn]
                 for pend in pendencias:
-                    for i in follow[pend]:
+                    for i in follow[pend[0]]:
                         if i not in follow[vn]:
                             follow[vn].append(i)
-                    if pend not in prods_1:
+                    if pend[0] not in prods_1:
                         continue
-                    for j in prods_1[pend]:
+                    for j in prods_1[pend[0]]:
                         if j not in prods_1_new and j != vn:  # para evitar {'S':['S']}
                             prods_1_new.append(j)
                 prods_1[vn] = prods_1_new
         return follow
-    
 
     @staticmethod
     def first_nt(gram, first):
