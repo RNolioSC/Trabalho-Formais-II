@@ -162,23 +162,27 @@ class View:
         elif self.operacao == 5:
             if not self.resultados:
                 messagebox.showinfo("Resultado da operação", "Foi possível fatorar a gramática em " + n_passos +" ou menos passos")
+                self.formata_glc(self.resultados[1])
             else:
                 messagebox.showinfo("Resultado da operação", "Não foi possível fatorar a gramática em " + n_passos + " passos")
-                self.output_glc.insert(END, "Vns NÃO Fatoradas: " + " - ".join(self.resultados))
+                self.output_glc.insert(END, "Vns NÃO Fatoradas: " + " - ".join(self.resultados[0]))
         elif self.operacao not in [1, 2, 4, 6]:
             self.formata_glc(self.output_glc, self.resultados)
         else:
             if self.operacao == 1:
-                msg = "A gramática gera L(G) vazia" if self.resultados else "A gramática gera L(G) não vazia"
+                msg = "A gramática gera L(G) vazia" if self.resultados[0] else "A gramática gera L(G) não vazia"
             if self.operacao == 2:
-                msg = "A gramática gera L(G) finita" if self.resultados else "A gramática gera L(G) infinita"
+                msg = "A gramática gera L(G) finita" if self.resultados[0] else "A gramática gera L(G) infinita"
             if self.operacao == 4:
-                msg = "A gramática está fatorada" if self.resultados else "A gramática não está fatorada"
+                msg = "A gramática está fatorada" if not self.resultados[0] else "A gramática não está fatorada"
+                self.output_glc.insert(END, "Vns NÃO Fatoradas: " + " - ".join(self.resultados[0]))
             if self.operacao == 6:
                 recursao = self.controller.lista_operacoes["Tipo de recursão"]
                 result = False if recursao[0] or recursao[1] else True
                 msg = "Não há recursão à esquerda" if result else "A recursão à esquerda foi removida"
             messagebox.showinfo("Resultado da operação", msg)
+            if self.resultados[1] is not None:
+                self.formata_glc(self.output_glc, self.resultados[1])
 
         lista_operacao = self.controller.get_lista_operacoes()
         self.lista_operacoes.delete(0, END)
@@ -196,7 +200,7 @@ class View:
         try:
             opcao_escolhida = self.lista_operacoes.get(select[0])
         except IndexError:
-            opcao_escolhida = 'GLC Inicial'
+            opcao_escolhida = 'GLC Final' if 'GLC Final' in self.controller.get_lista_operacoes().keys() else 'GLC Inicial'
 
         result = self.controller.get_lista_operacoes()[opcao_escolhida]
 

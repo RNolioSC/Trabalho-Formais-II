@@ -49,7 +49,7 @@ class EliminarRaE:
 
             tmp_dict_glc = copy.deepcopy(new_dict_glc)
 
-        new_glc = Glc(new_dict_glc, glc.get_simbolo_inicial())
+        new_glc = Glc(new_dict_glc, glc_propria.get_simbolo_inicial())
         return new_glc, rec_direta, rec_indireta, glc_propria, glc_fertil, glc_e_livre, glc_sem_ciclos, ne, n, nf, vi
 
     @staticmethod

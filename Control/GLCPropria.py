@@ -46,7 +46,6 @@ class GLCPropria:
             novo_simbolo = glc.get_simbolo_inicial() + '1'
             new_glc.get_dict_glc()[novo_simbolo] = [[glc.get_simbolo_inicial()], ['&']]
             new_glc.set_simbolo_inicial(novo_simbolo)
-
         return new_glc, ne
 
     @staticmethod
