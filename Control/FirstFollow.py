@@ -240,7 +240,7 @@ class FirstFollow:
             for i in producoes_a:  # eg: [a, S]
                 if i[0] in vn:  # eh um vn  #eg: [X, A]
                     first_a.append(i[0])
-                    if '&' in first[i[0]]:
+                    if '&' in first[i[0]] and len(i) > 1:
                         first_a_pendentes.append(i[1:])
 
             if first_a_pendentes:  # se existir alguma pendencia:
