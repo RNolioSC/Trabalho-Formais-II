@@ -49,8 +49,15 @@ class Controller:
                 self.lista_operacoes["Vns Não Fatoradas"] = vn_nao_fatorada
             return [vn_nao_fatorada, None]
         if op == 5:
-            eh_fatoravel, glc, vn_nao_fatorada = Fatoracao.eh_fatoravel(self.glc, self.n_passos)
+            eh_fatoravel, glc, vn_nao_fatorada, glc_rae, rd, ri, glc_propria, glc_fertil, glc_e_livre, glc_sem_ciclos, ne, na, nf, vi = Fatoracao.eh_fatoravel(self.glc, self.n_passos)
+            self.lista_operacoes["GLC &-livre"] = glc_e_livre
+            self.lista_operacoes["GLC Sem Ciclos"] = glc_sem_ciclos
+            self.lista_operacoes["GLC Fértil"] = glc_fertil
+            self.lista_operacoes["GLC Própria"] = glc_propria
+            self.lista_operacoes["Recursão a Esquerda"] = glc_rae
             self.lista_operacoes["GLC Final"] = glc
+            self.lista_operacoes["Conjuntos gerados"] = [nf, vi, ne, na]
+            self.lista_operacoes["Tipo de recursão"] = [rd, ri]
             if vn_nao_fatorada:
                 self.lista_operacoes["Vns Não Fatoradas"] = vn_nao_fatorada
             return [vn_nao_fatorada, glc]

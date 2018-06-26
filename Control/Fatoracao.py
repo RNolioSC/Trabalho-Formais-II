@@ -7,7 +7,8 @@ class Fatoracao:
 
     @staticmethod
     def eh_fatoravel(glc, n_passos):
-        glc = EliminarRaE.eliminar_RaE(glc)[0]
+        glc, rec_direta, rec_indireta, glc_propria, glc_fertil, glc_e_livre, glc_sem_ciclos, ne, n, nf, vi = EliminarRaE.eliminar_RaE(glc)
+
         dict_glc = glc.get_dict_glc()
         new_dict_glc = copy.deepcopy(dict_glc)
 
@@ -15,7 +16,7 @@ class Fatoracao:
             esta_fatorada, first, vn_nao_fatorada = Fatoracao.esta_fatorada(Glc(new_dict_glc, glc.get_simbolo_inicial()))
 
             if esta_fatorada or not vn_nao_fatorada:
-                return True, Glc(new_dict_glc, glc.get_simbolo_inicial()), None
+                return True, Glc(new_dict_glc, glc.get_simbolo_inicial()), None, glc, rec_direta, rec_indireta, glc_propria, glc_fertil, glc_e_livre, glc_sem_ciclos, ne, n, nf, vi
             else:
                 # Atualiza old dict
                 dict_glc = copy.deepcopy(new_dict_glc)
@@ -65,7 +66,7 @@ class Fatoracao:
         new_glc = Glc(new_dict_glc, glc.get_simbolo_inicial())
         esta_fatorada, first, vn_nao_fatorada = Fatoracao.esta_fatorada(new_glc)
 
-        return (True, new_glc, None) if esta_fatorada else (False, new_glc, vn_nao_fatorada)
+        return (True, new_glc, None, glc, rec_direta, rec_indireta, glc_propria, glc_fertil, glc_e_livre, glc_sem_ciclos, ne, n, nf, vi) if esta_fatorada else (False, new_glc, vn_nao_fatorada, glc, rec_direta, rec_indireta, glc_propria, glc_fertil, glc_e_livre, glc_sem_ciclos, ne, n, nf, vi)
 
     @staticmethod
     def eh_possivel_fatoracao_direta(first, vn, vt_duplicada, producoes_para_fatorar):
