@@ -35,9 +35,10 @@ class GLCPropria:
                 if '&' not in producoes:
                     new_dict_glc[simbolo].append(producoes)
             if producoes_validas:
-                for producoes in producoes_validas[0]:
-                    if producoes not in new_dict_glc[simbolo]:
-                        new_dict_glc[simbolo].append(producoes)
+                for producoes in producoes_validas:
+                    for novas_producoes in producoes:
+                        if novas_producoes not in new_dict_glc[simbolo]:
+                            new_dict_glc[simbolo].append(novas_producoes)
 
         new_glc = Glc(new_dict_glc, glc.get_simbolo_inicial())
 
