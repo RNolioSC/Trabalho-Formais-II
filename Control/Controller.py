@@ -21,6 +21,7 @@ class Controller:
 
     def exec_operations(self, op):
         if op == 1:
+            print(self.glc.get_dict_glc())
             resultado, nf, vi, glc_ssi, glc_ferteis = LGoperations.eh_vazia(self.glc)
             self.lista_operacoes["GLC Fértil"] = glc_ferteis
             self.lista_operacoes["GLC Final"] = glc_ssi

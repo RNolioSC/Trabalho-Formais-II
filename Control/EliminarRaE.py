@@ -66,7 +66,9 @@ class EliminarRaE:
                 elif producoes[0] in list(dict_glc.keys()):
                     for prod_indiretas in dict_glc[producoes[0]]:
                         if prod_indiretas[0] == simbolos and producoes[0] not in rec_indireta[simbolos] and len(producoes) != 1:
-                            rec_indireta[simbolos].append(producoes[0])
+                            ordem = list(dict_glc.keys())
+                            if ordem.index(producoes[0]) > ordem.index(simbolos):
+                                rec_indireta[simbolos].append(producoes[0])
             if not rec_indireta[simbolos]:
                 del rec_indireta[simbolos]
         return rec_direta, rec_indireta

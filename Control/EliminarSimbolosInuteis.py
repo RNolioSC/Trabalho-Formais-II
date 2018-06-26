@@ -11,7 +11,7 @@ class EliminarSimbolosInuteis:
 
         # Verifica se não foi eliminado todas as produções
         if glc_ferteis.get_dict_glc() == {}:
-            return glc_ferteis, Nf, []
+            return Glc({}, glc_ferteis.get_simbolo_inicial()), glc_ferteis, Nf, []
         glc_alcancaveis, Vi = EliminarSimbolosInuteis.eliminar_inalcancaveis(glc_ferteis)
 
         return glc_alcancaveis, glc_ferteis, Nf, Vi
@@ -66,6 +66,10 @@ class EliminarSimbolosInuteis:
         # Conjunto N
         N = None
         tmp_N = [glc.get_simbolo_inicial()]
+
+        # Verifica se S não foi deletado
+        if glc.get_simbolo_inicial() not in list(dict_glc.keys()):
+            return Glc({}, glc.get_simbolo_inicial()), N
 
         while N != tmp_N:
             N = tmp_N.copy()

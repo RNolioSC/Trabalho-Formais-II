@@ -244,7 +244,7 @@ class View:
             return
 
         output = ''
-        if dict_glc != {}:
+        if dict_glc != {} and glc.get_simbolo_inicial() in list(dict_glc.keys()):
             # Seta simbolo inicial como primeiro simbolo
             output += glc.get_simbolo_inicial() + '-> '
             for producoes in dict_glc[glc.get_simbolo_inicial()]:
@@ -265,6 +265,8 @@ class View:
                         output += '| '
                     output = '\n' + output[:-2]
                     field_text.insert(END, output)
+        else:
+            field_text.insert(END, glc.get_simbolo_inicial() + '->')
 
     # Limpa o campo de texto
     def clear_all(self):

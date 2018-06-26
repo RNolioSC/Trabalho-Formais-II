@@ -9,7 +9,6 @@ class GLCPropria:
         glc_e_livre, ne = GLCPropria.e_livre(glc) if GLCPropria.construir_NE(glc) else (glc, [])
         glc_sem_ciclos, n = GLCPropria.remove_ciclos(glc_e_livre) if GLCPropria.verifica_ciclos(glc_e_livre) else (glc_e_livre, [])
         glc_propria, glc_fertil, nf, vi = EliminarSimbolosInuteis.eliminar_simbolos_inuteis(glc_sem_ciclos)
-
         return glc_propria, glc_fertil, glc_e_livre, glc_sem_ciclos, ne, n, nf, vi
 
     @staticmethod
