@@ -90,9 +90,3 @@ class Fatoracao:
                 vn_nao_fatorada.append(keys)
 
         return (True, first, None) if not vn_nao_fatorada else (False, first, vn_nao_fatorada)
-
-
-# first = {'S': ['a', 'a', 'a'], 'X': ['z', 'a', 'a'], 'Y': ['a', 'a']}
-#y = Glc({'S': [['a', 'S', 'b'], ['A', 'C']], 'A': [['a', 'A', 'b'], ['a', 'D'], ['b', 'E']], 'C': [['c', 'C'], ['&']], 'D': [['a', 'D'], ['&']], 'E': [['b', 'E'], ['&']]}, 'S')
-#y = Glc({'S': [['a', 'S'], ['X']], 'X': [['Y'], ['z']], 'Y': [['a', 'Y'], ['a']]}, 'S')
-#print(Fatoracao.eh_fatoravel(y, 2))

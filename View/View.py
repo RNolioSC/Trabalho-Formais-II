@@ -146,53 +146,53 @@ class View:
 
     # Executar a operacao selecionada e exibe os resultados
     def exibir_resultados(self):
-        #try:
-        self.clear_all()
-        self.controller.set_glc(self.input)
-        if self.operacao == 5:
-            n_passos = askstring('Número de passos', 'Insira a quantidade de passos')
-            self.controller.set_n_passos(int(n_passos))
+        try:
+            self.clear_all()
+            self.controller.set_glc(self.input)
+            if self.operacao == 5:
+                n_passos = askstring('Número de passos', 'Insira a quantidade de passos')
+                self.controller.set_n_passos(int(n_passos))
 
-        self.resultados = self.controller.exec_operations(self.operacao)
+            self.resultados = self.controller.exec_operations(self.operacao)
 
-        if self.operacao in [7, 8, 9]:
-            opcao_escolhida = ('First' if self.operacao == 7 else 'Follow') if self.operacao != 9 else 'First NT'
-            for keys in self.resultados:
-                self.output_glc.insert(END, opcao_escolhida+' (' + keys + ') : ' + ' - '.join(list(set(self.resultados[keys]))) + '\n')
-        elif self.operacao == 5:
-            if not self.resultados:
-                messagebox.showinfo("Resultado da operação", "Foi possível fatorar a gramática em " + n_passos +" ou menos passos")
-                self.formata_glc(self.resultados[1])
+            if self.operacao in [7, 8, 9]:
+                opcao_escolhida = ('First' if self.operacao == 7 else 'Follow') if self.operacao != 9 else 'First NT'
+                for keys in self.resultados:
+                    self.output_glc.insert(END, opcao_escolhida+' (' + keys + ') : ' + ' - '.join(list(set(self.resultados[keys]))) + '\n')
+            elif self.operacao == 5:
+                if not self.resultados:
+                    messagebox.showinfo("Resultado da operação", "Foi possível fatorar a gramática em " + n_passos +" ou menos passos")
+                    self.formata_glc(self.resultados[1])
+                else:
+                    messagebox.showinfo("Resultado da operação", "Não foi possível fatorar a gramática em " + n_passos + " passos")
+                    self.output_glc.insert(END, "Vns NÃO Fatoradas: " + " - ".join(self.resultados[0]))
+            elif self.operacao not in [1, 2, 4, 6]:
+                self.formata_glc(self.output_glc, self.resultados)
             else:
-                messagebox.showinfo("Resultado da operação", "Não foi possível fatorar a gramática em " + n_passos + " passos")
-                self.output_glc.insert(END, "Vns NÃO Fatoradas: " + " - ".join(self.resultados[0]))
-        elif self.operacao not in [1, 2, 4, 6]:
-            self.formata_glc(self.output_glc, self.resultados)
-        else:
-            if self.operacao == 1:
-                msg = "A gramática gera L(G) vazia" if self.resultados[0] else "A gramática gera L(G) não vazia"
-            if self.operacao == 2:
-                msg = "A gramática gera L(G) finita" if self.resultados[0] else "A gramática gera L(G) infinita"
-            if self.operacao == 4:
-                msg = "A gramática está fatorada" if not self.resultados[0] else "A gramática não está fatorada"
-                self.output_glc.insert(END, "Vns NÃO Fatoradas: " + " - ".join(self.resultados[0]))
-            if self.operacao == 6:
-                recursao = self.controller.lista_operacoes["Tipo de recursão"]
-                result = False if recursao[0] or recursao[1] else True
-                msg = "Não há recursão à esquerda" if result else "A recursão à esquerda foi removida"
-            messagebox.showinfo("Resultado da operação", msg)
-            if self.resultados[1] is not None:
-                self.formata_glc(self.output_glc, self.resultados[1])
+                if self.operacao == 1:
+                    msg = "A gramática gera L(G) vazia" if self.resultados[0] else "A gramática gera L(G) não vazia"
+                if self.operacao == 2:
+                    msg = "A gramática gera L(G) finita" if self.resultados[0] else "A gramática gera L(G) infinita"
+                if self.operacao == 4:
+                    msg = "A gramática está fatorada" if not self.resultados[0] else "A gramática não está fatorada"
+                    self.output_glc.insert(END, "Vns NÃO Fatoradas: " + " - ".join(self.resultados[0]))
+                if self.operacao == 6:
+                    recursao = self.controller.lista_operacoes["Tipo de recursão"]
+                    result = False if recursao[0] or recursao[1] else True
+                    msg = "Não há recursão à esquerda" if result else "A recursão à esquerda foi removida"
+                messagebox.showinfo("Resultado da operação", msg)
+                if self.resultados[1] is not None:
+                    self.formata_glc(self.output_glc, self.resultados[1])
 
-        lista_operacao = self.controller.get_lista_operacoes()
-        self.lista_operacoes.delete(0, END)
-        for keys in lista_operacao.keys():
-            self.lista_operacoes.insert(END, keys)
+            lista_operacao = self.controller.get_lista_operacoes()
+            self.lista_operacoes.delete(0, END)
+            for keys in lista_operacao.keys():
+                self.lista_operacoes.insert(END, keys)
 
-        self.lista_operacoes.bind("<Double-1>", self.formata_lista_operacoes)
-        self.output_glc.bind("<Button-3>", self.formata_saida_entrada)
-        #except Exception:
-        #   messagebox.showinfo("ERRO!", "Um erro inesperado ocorreu! Por favor, revise sua gramática.")
+            self.lista_operacoes.bind("<Double-1>", self.formata_lista_operacoes)
+            self.output_glc.bind("<Button-3>", self.formata_saida_entrada)
+        except Exception:
+           messagebox.showinfo("ERRO!", "Um erro inesperado ocorreu! Por favor, revise sua gramática.")
 
     def formata_saida_entrada(self, event):
         select = self.lista_operacoes.curselection()

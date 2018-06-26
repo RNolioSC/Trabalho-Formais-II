@@ -177,14 +177,3 @@ class GLCPropria:
                     ja_visitados.append(producoes[0])
                     novos_simbolos.append(producoes[0])
         return False
-
-
-#x_ciclo = Glc({'S': [['A', 'ab'], ['A']], 'A': [['a', 'S', 'X'], ['X']], 'X': [['S']]}, 'S')
-#print(GLCPropria.construir_NE(x_ciclo))
-#print(x_ciclo.get_dict_glc())
-#x = GLCPropria.e_livre(x_ciclo)[0]
-#print(x.get_dict_glc())
-#x = GLCPropria.remove_ciclos(x)[0]
-#print(x.get_dict_glc())
-#x = EliminarSimbolosInuteis.eliminar_simbolos_inuteis(x)[0]
-#print(x.get_dict_glc())

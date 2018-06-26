@@ -72,8 +72,3 @@ class EliminarRaE:
             if not rec_indireta[simbolos]:
                 del rec_indireta[simbolos]
         return rec_direta, rec_indireta
-
-#y = Glc({'S': [['a']], 'A': [['d']]}, 'S')
-#x = Glc({'S': [['A', 'a'], ['S', 'b']], 'A': [['S', 'c'], ['d']]}, 'S')
-#z = Glc({'S': [['S', 'a'], ['b']], 'A': [['S', 'c'], ['d']]}, 'S')
-#print(EliminarRaE.eliminar_RaE(x)[0].get_dict_glc())
