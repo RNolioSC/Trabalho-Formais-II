@@ -256,7 +256,7 @@ class FirstFollow:
                         continue
                     else:  # eh um vn
                         first_nt[a].append(pendencia[0])
-                        if '&' in first[pendencia[0]]:
+                        if '&' in first[pendencia[0]] and len(pendencia) > 1:
                             first_a_pendencias_novas.append(pendencia[1:])
                        
                 # atualizando globalmente
