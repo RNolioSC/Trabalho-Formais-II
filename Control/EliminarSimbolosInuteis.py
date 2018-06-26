@@ -31,10 +31,10 @@ class EliminarSimbolosInuteis:
             for vn in dict_gr.keys():
                 for producoes in dict_gr[vn]:
                     for simbolo in producoes:
-                        if simbolo.isupper() and simbolo not in N:
+                        if simbolo.isupper() and simbolo not in tmp_N:
                             existe_vn = True
                             break
-                    if not existe_vn and vn not in N:
+                    if not existe_vn and vn not in tmp_N:
                         tmp_N.append(vn)
                     existe_vn = False
 

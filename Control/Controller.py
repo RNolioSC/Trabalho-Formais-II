@@ -9,8 +9,6 @@ from Control.FirstFollow import *
 
 class Controller:
 
-    # TODO Expandir tamanho dos input/output
-    # TODO Add exceções onde necessário
     # TODO MSG para avisar se possui ou não RaE
 
     def __init__(self):
@@ -23,14 +21,16 @@ class Controller:
 
     def exec_operations(self, op):
         if op == 1:
-            resultado, nf, vi, glc_ssi = LGoperations.eh_vazia(self.glc)
-            self.lista_operacoes["GLC Sem Símbolos Inúteis"] = glc_ssi
+            resultado, nf, vi, glc_ssi, glc_ferteis = LGoperations.eh_vazia(self.glc)
+            self.lista_operacoes["GLC Fértil"] = glc_ferteis
+            self.lista_operacoes["GLC Final"] = glc_ssi
             self.lista_operacoes["Conjuntos gerados"] = [nf, vi]
             return resultado
         if op == 2:
-            resultado, nf, vi, na, glc_sem_inuteis, glc_sem_ciclo = LGoperations.eh_finita(self.glc)
+            resultado, nf, vi, na, glc_sem_inuteis, glc_sem_ciclo, glc_ferteis = LGoperations.eh_finita(self.glc)
+            self.lista_operacoes["GLC Fértil"] = glc_ferteis
             self.lista_operacoes["GLC Sem Ciclos"] = glc_sem_ciclo
-            self.lista_operacoes["GLC Sem Símbolos Inúteis"] = glc_sem_inuteis
+            self.lista_operacoes["GLC Final"] = glc_sem_inuteis
             self.lista_operacoes["Conjuntos gerados"] = [nf, vi, [], na]
             return resultado
         if op == 3:
@@ -76,7 +76,9 @@ class Controller:
         if op == 9:
             first = FirstFollow.first(self.glc)
             self.lista_operacoes["First"] = first
-
+            first_nt = FirstFollow.first_nt(self.glc, first)
+            self.lista_operacoes["First NT"] = first_nt
+            return first_nt
 
     # Salvar/Carregar arquivo
     def salvar_expressao(self, expressao):

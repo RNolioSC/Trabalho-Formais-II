@@ -69,7 +69,6 @@ class EliminarRaE:
                             rec_indireta[simbolos].append(producoes[0])
             if not rec_indireta[simbolos]:
                 del rec_indireta[simbolos]
-
         return rec_direta, rec_indireta
 
 #y = Glc({'S': [['a']], 'A': [['d']]}, 'S')

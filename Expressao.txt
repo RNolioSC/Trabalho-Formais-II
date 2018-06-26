@@ -1,5 +1,5 @@
 S-> a S b | A C
-A -> a A b | a D | b E
+A -> S b | a D | b E
 C -> c C | &
 D -> a D | &
 E -> b E | &

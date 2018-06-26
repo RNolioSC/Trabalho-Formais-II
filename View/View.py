@@ -14,7 +14,7 @@ class View:
         # Cria frame raiz
         self.root = Tk()
         self.root.title('T1 de Formais')
-        self.root.geometry('{}x{}'.format(800, 380))
+        self.root.geometry('{}x{}'.format(850, 380))
 
         # Create frames principais
         self.frame_top = Frame(self.root, width=800, height=30, pady=3)
@@ -55,17 +55,17 @@ class View:
         self.top_frame_centro.grid_rowconfigure(1, weight=1)
         self.top_frame_centro.grid_columnconfigure(0, weight=1)
 
-        self.input = Text(self.top_frame_centro, bg='white', width=30, height=21)
+        self.input = Text(self.top_frame_centro, bg='white', width=35, height=21)
         self.input.grid(row=0, column=0, sticky="ew")
 
         # Criar widgets frames da direita
         self.frame_dir.grid_rowconfigure(1, weight=1)
         self.frame_dir.grid_columnconfigure(0, weight=1)
 
-        self.lista_operacoes = Listbox(self.frame_dir, width=40, height=7)
-        self.lista_operacoes.grid(row=16, column=0, columnspan=12, rowspan=16, sticky='wse', pady=3)
+        self.lista_operacoes = Listbox(self.frame_dir, width=40, height=9)
+        self.lista_operacoes.grid(row=16, column=0, columnspan=12, rowspan=16, sticky='wsne', pady=3)
 
-        self.output_glc = Text(self.frame_dir, bg='white', width=30, height=15)
+        self.output_glc = Text(self.frame_dir, bg='white', width=35, height=12)
         self.output_glc.grid(row=0, column=2, columnspan=3, sticky="ew")
 
         # Criar widgets frame do topo
@@ -146,12 +146,12 @@ class View:
 
     # Executar a operacao selecionada e exibe os resultados
     def exibir_resultados(self):
+        #try:
         self.clear_all()
         self.controller.set_glc(self.input)
         if self.operacao == 5:
             n_passos = askstring('Número de passos', 'Insira a quantidade de passos')
-            print(n_passos)
-            self.controller.set_n_passos(int(n_passos)) # TODO criar uma var pra receber esse cara (Um messagebox, mais fácil)
+            self.controller.set_n_passos(int(n_passos))
 
         self.resultados = self.controller.exec_operations(self.operacao)
 
@@ -165,7 +165,7 @@ class View:
             else:
                 messagebox.showinfo("Resultado da operação", "Não foi possível fatorar a gramática em " + n_passos + " passos")
                 self.output_glc.insert(END, "Vns NÃO Fatoradas: " + " - ".join(self.resultados))
-        elif self.operacao not in [1, 2, 4]:
+        elif self.operacao not in [1, 2, 4, 6]:
             self.formata_glc(self.output_glc, self.resultados)
         else:
             if self.operacao == 1:
@@ -174,6 +174,10 @@ class View:
                 msg = "A gramática gera L(G) finita" if self.resultados else "A gramática gera L(G) infinita"
             if self.operacao == 4:
                 msg = "A gramática está fatorada" if self.resultados else "A gramática não está fatorada"
+            if self.operacao == 6:
+                recursao = self.controller.lista_operacoes["Tipo de recursão"]
+                result = False if recursao[0] or recursao[1] else True
+                msg = "Não há recursão à esquerda" if result else "A recursão à esquerda foi removida"
             messagebox.showinfo("Resultado da operação", msg)
 
         lista_operacao = self.controller.get_lista_operacoes()
@@ -183,6 +187,8 @@ class View:
 
         self.lista_operacoes.bind("<Double-1>", self.formata_lista_operacoes)
         self.output_glc.bind("<Button-3>", self.formata_saida_entrada)
+        #except Exception:
+        #   messagebox.showinfo("ERRO!", "Um erro inesperado ocorreu! Por favor, revise sua gramática.")
 
     def formata_saida_entrada(self, event):
         select = self.lista_operacoes.curselection()
