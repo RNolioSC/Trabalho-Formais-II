@@ -221,7 +221,7 @@ class FirstFollow:
                     if pend[0] not in prods_1:
                         continue
                     for j in prods_1[pend[0]]:
-                        if j not in prods_1_new and j != vn:  # para evitar {'S':['S']}
+                        if j not in prods_1_new and j != [vn]:  # para evitar {'S':[['S']]}
                             prods_1_new.append(j)
                 prods_1[vn] = prods_1_new
         return follow
