@@ -18,8 +18,8 @@ class EliminarSimbolosInuteis:
 
     @staticmethod
     def eliminar_inferteis(glc):
-        dict_gr = glc.get_dict_glc()
-        new_dict_glc = copy.deepcopy(dict_gr)
+        dict_glc = glc.get_dict_glc()
+        new_dict_glc = copy.deepcopy(dict_glc)
 
         # Conjunto N
         N = None
@@ -28,8 +28,8 @@ class EliminarSimbolosInuteis:
 
         while N != tmp_N:
             N = tmp_N.copy()
-            for vn in dict_gr.keys():
-                for producoes in dict_gr[vn]:
+            for vn in dict_glc.keys():
+                for producoes in dict_glc[vn]:
                     for simbolo in producoes:
                         if simbolo.isupper() and simbolo not in tmp_N:
                             existe_vn = True
@@ -39,22 +39,23 @@ class EliminarSimbolosInuteis:
                     existe_vn = False
 
         # Simbolos para eliminar
-        dead_symbols = [vn for vn in dict_gr.keys() if vn not in N]
+        dead_symbols = [vn for vn in dict_glc.keys() if vn not in N]
 
         # Eliminando produções com não terminais inférteis
         pos_para_eliminar = []
         for simbolo in dead_symbols:
-            for vn in dict_gr.keys():
+            for vn in dict_glc.keys():
                 if vn not in dead_symbols:
-                    for pos_producoes in range(len(dict_gr[vn])):
-                        if simbolo in dict_gr[vn][pos_producoes]:
+                    for pos_producoes in range(len(dict_glc[vn])):
+                        if simbolo in dict_glc[vn][pos_producoes]:
                             pos_para_eliminar.append(pos_producoes)
+                    pos_para_eliminar.reverse()
                     for pos in pos_para_eliminar:
                         del new_dict_glc[vn][pos]
-                    dict_gr = copy.deepcopy(new_dict_glc)
+                    dict_glc = copy.deepcopy(new_dict_glc)
                     pos_para_eliminar = []
             del new_dict_glc[simbolo]
-            dict_gr = copy.deepcopy(new_dict_glc)
+            dict_glc = copy.deepcopy(new_dict_glc)
 
         return Glc(new_dict_glc, glc.get_simbolo_inicial()), N
 

@@ -14,23 +14,23 @@ class View:
         # Cria frame raiz
         self.root = Tk()
         self.root.title('T1 de Formais')
-        self.root.geometry('{}x{}'.format(850, 380))
+        self.root.geometry('{}x{}'.format(900, 380))
 
         # Create frames principais
-        self.frame_top = Frame(self.root, width=800, height=30, pady=3)
+        self.frame_top = Frame(self.root, width=900, height=30, pady=3)
         self.frame_esq = Frame(self.root, width=270, height=50, pady=3)
-        self.frame_centro = Frame(self.root, width=266, height=50, pady=3)
-        self.frame_dir = Frame(self.root, width=267, height=50, pady=3, padx=10)
+        self.frame_centro = Frame(self.root, width=300, height=50, pady=3)
+        self.frame_dir = Frame(self.root, width=240, height=50, pady=3, padx=7)
 
         # Layout dos containers principais
         self.root.grid_rowconfigure(1, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
 
         # Colocar frames na tela
-        self.frame_top.grid(row=0, sticky="ew")
-        self.frame_esq.grid(row=1, sticky="nsw")
-        self.frame_centro.grid(row=1, sticky="ns")
-        self.frame_dir.grid(row=1, sticky="nse")
+        self.frame_top.grid(row=0, columnspan=3, sticky="ew")
+        self.frame_esq.grid(row=1, column =0, sticky="nsw")
+        self.frame_centro.grid(row=1, column = 1, sticky="ns")
+        self.frame_dir.grid(row=1, column = 2,sticky="nse")
 
         # Criar widgets frames da esquerda
         self.frame_esq.grid_rowconfigure(0, weight=1)
@@ -55,8 +55,8 @@ class View:
         self.top_frame_centro.grid_rowconfigure(1, weight=1)
         self.top_frame_centro.grid_columnconfigure(0, weight=1)
 
-        self.input = Text(self.top_frame_centro, bg='white', width=35, height=21)
-        self.input.grid(row=0, column=0, sticky="ew")
+        self.input = Text(self.top_frame_centro, bg='white', width=32, height=21)
+        self.input.grid(row=0, column=0, sticky="we")
 
         # Criar widgets frames da direita
         self.frame_dir.grid_rowconfigure(1, weight=1)
@@ -78,7 +78,7 @@ class View:
 
         opcoes.grid(row=0, column=0, sticky="w")
         input.grid(row=0, column=0)
-        output.grid(row=0, column=1, sticky="e")
+        output.grid(row=0, columnspan=1, sticky="e")
 
         self.controller = controller
 
@@ -107,9 +107,9 @@ class View:
         follow = Radiobutton(analiseSintatica, text="Follow", variable="Operacao", value=8, tristatevalue=0, command=lambda: self.set_operacao(8))
         firstNT = Radiobutton(analiseSintatica, text="First-NT", variable="Operacao", value=9, tristatevalue=0, command=lambda: self.set_operacao(9))
 
-        btn_continue = Button(self.btn_frame_esq, text="Continuar", command=self.exibir_resultados)
-        btn_salvar = Button(self.btn_frame_esq, text="Salvar Expressão", command=self.salvar_expressao)
-        btn_carregar = Button(self.btn_frame_esq, text="Carregar Expressão", command=self.carregar_expressao)
+        btn_continue = Button(self.btn_frame_esq, text="CONTINUAR", command=self.exibir_resultados)
+        btn_salvar = Button(self.btn_frame_esq,  text="SALVAR EXPRESSÃO", command=self.salvar_expressao)
+        btn_carregar = Button(self.btn_frame_esq,  text="CARREGAR EXPRESSÃO", command=self.carregar_expressao)
 
         lg.grid(row=0, column=0, columnspan=3, sticky='we')
         vazia.grid(row=1, column=0, sticky='w')

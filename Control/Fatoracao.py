@@ -11,7 +11,7 @@ class Fatoracao:
         dict_glc = glc.get_dict_glc()
         new_dict_glc = copy.deepcopy(dict_glc)
 
-        for i in range(0, n_passos-1):
+        for i in range(0, n_passos):
             esta_fatorada, first, vn_nao_fatorada = Fatoracao.esta_fatorada(Glc(new_dict_glc, glc.get_simbolo_inicial()))
 
             if esta_fatorada or not vn_nao_fatorada:
